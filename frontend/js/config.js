@@ -1,18 +1,24 @@
 /**
  * Configuration — Centralized app settings.
+ * Supports window.__ENV__ runtime overrides from env.js or deployment.
  */
 
-const getHost = () => {
-    const hostname = window.location.hostname;
-    // Map 0.0.0.0 to localhost to avoid Chromium Private Network Access (PNA) restrictions
-    if (!hostname || hostname === '0.0.0.0') {
-        return 'localhost';
+const getBackendUrl = () => {
+    // 1. Explicit deployment override via window.__ENV__ (from env.js or deployment inject)
+    if (window.__ENV__?.BACKEND_URL && window.__ENV__.BACKEND_URL.trim() !== '') {
+        return window.__ENV__.BACKEND_URL.trim().replace(/\/+$/, '');
     }
-    return hostname;
+
+    // 2. Derive host dynamically from current browser location (supports WiFi/LAN & localhost)
+    const hostname = window.location.hostname;
+    const host = (!hostname || hostname === '0.0.0.0') ? 'localhost' : hostname;
+    const port = window.__ENV__?.PORT || 5050;
+
+    return `http://${host}:${port}`;
 };
 
 export const CONFIG = {
-    SERVER_URL: `http://${getHost()}:5050`,
+    SERVER_URL: getBackendUrl(),
     SOCKET_OPTIONS: {
         transports: ['websocket', 'polling'],
         reconnection: true,
@@ -24,4 +30,5 @@ export const CONFIG = {
     TOAST_DURATION_MS: 3500,
     MAX_NAME_LENGTH: 16,
 };
+
 

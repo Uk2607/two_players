@@ -112,10 +112,43 @@ two_players/
 
 ### Prerequisites
 
-- [uv](https://docs.astral.sh/uv/) (Fast Python package manager)
+- [uv](https://docs.astral.sh/uv/) (Fast Python package manager) or standard `python3` / `pip`
 - Python 3.10+
 
-### 1. Setup Backend with `uv`
+### 1. Environment Configuration (`.env`)
+
+Backend and frontend environments are self-contained within their respective directories:
+
+#### Backend (`backend/.env`)
+Copy the template in [`backend/.env.example`](file:///backend/.env.example) to `backend/.env`:
+```bash
+cp backend/.env.example backend/.env
+```
+
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `SECRET_KEY` | *(auto-generated)* | Cryptographic secret for Flask sessions (auto-generates random 256-bit token if empty). |
+| `HOST` | `0.0.0.0` | Bind host address (`0.0.0.0` enables local Wi-Fi & LAN connections). |
+| `PORT` | `5050` | Backend Socket.IO service port. |
+| `DEBUG` | `false` | Enable/disable Flask debug mode. |
+| `CORS_ORIGINS` | `*` | Allowed CORS origins (e.g. `*` for LAN or `https://mygame.com,http://localhost:3000`). |
+| `SOCKETIO_ASYNC_MODE` | `threading` | Concurrency mode (`threading`, `eventlet`, or `gevent`). |
+
+#### Frontend (`frontend/.env` / `frontend/env.js`)
+Copy [`frontend/.env.example`](file:///frontend/.env.example) or [`frontend/env.example.js`](file:///frontend/env.example.js) for deployment overrides:
+```bash
+cp frontend/.env.example frontend/.env
+```
+
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `PORT` | `3000` | Local HTTP port for the frontend static server. |
+| `BACKEND_URL` | *(empty)* | Optional remote backend URL when deploying frontend on a separate cloud host (e.g. Vercel, Netlify). Leave empty for local WiFi auto-discovery. |
+
+> [!NOTE]
+> All `.env` files and `frontend/env.js` are in `.gitignore` and are **never committed** to source control. Secret keys are never hardcoded into the source code.
+
+### 2. Setup Backend with `uv`
 
 Navigate to the `backend` folder, create the `.venv` using `uv`, and install dependencies:
 
@@ -137,7 +170,7 @@ python app.py
 
 The server will display your LAN IP (e.g. `http://192.168.1.35:5050`).
 
-### 2. Run Frontend
+### 3. Run Frontend
 
 In a separate terminal window:
 
@@ -147,6 +180,24 @@ cd frontend
 # Serve frontend over local network
 python3 -m http.server 3000 --bind 0.0.0.0
 ```
+
+---
+
+### Deployment & Production Overrides
+
+- **Single Host / Monolith / LAN**:
+  Leave `BACKEND_URL` empty in `.env`. The frontend automatically infers the backend URL from the current browser host on port 5050.
+- **Separate Cloud Deployment (e.g., Frontend on Vercel/Netlify, Backend on Railway/Render/Docker)**:
+  1. Set `CORS_ORIGINS=https://your-frontend-domain.com` in backend `.env` or provider environment variables.
+  2. In `frontend/env.example.js`, copy to `frontend/env.js` and set:
+     ```javascript
+     window.__ENV__ = {
+         BACKEND_URL: 'https://your-backend-api.up.railway.app'
+     };
+     ```
+     Or inject `BACKEND_URL` during your deployment build step.
+
+---
 
 ---
 

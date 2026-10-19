@@ -32,11 +32,11 @@ def create_app() -> tuple[Flask, SocketIO]:
     # ── Flask app ────────────────────────────────────────────
     app = Flask(__name__)
     app.config['SECRET_KEY'] = Config.SECRET_KEY
-    CORS(app, origins=Config.CORS_ORIGINS)
+    CORS(app, origins=Config.get_cors_origins())
 
     socketio = SocketIO(
         app,
-        cors_allowed_origins=Config.CORS_ORIGINS,
+        cors_allowed_origins=Config.get_cors_origins(),
         async_mode=Config.SOCKETIO_ASYNC_MODE,
         ping_timeout=10,
         ping_interval=5,

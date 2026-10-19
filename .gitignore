@@ -10,6 +10,18 @@ env/
 venv/
 ENV/
 
+# Environment Variables & Secrets (do not commit!)
+.env
+.env.*
+!.env.example
+backend/.env
+backend/.env.*
+!backend/.env.example
+frontend/.env*
+!frontend/.env.example
+frontend/env.js
+!frontend/env.example.js
+
 # OS files
 .DS_Store
 Thumbs.db

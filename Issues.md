@@ -1,0 +1,1 @@
+- [x] Create .env and move all secrets there both for backend and frontend. Support deployment overrides without committing secrets. Updated README.md with configuration table.
