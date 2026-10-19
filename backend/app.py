@@ -19,6 +19,8 @@ from services import (
     RockPaperScissorsService,
     ConnectFourService,
     MemoryMatchService,
+    WordDuelService,
+    BattleshipService,
 )
 from events import register_all_events
 from routers import create_health_router, create_player_router
@@ -53,12 +55,16 @@ def create_app() -> tuple[Flask, SocketIO]:
     rps_service = RockPaperScissorsService(target_wins=3)
     c4_service = ConnectFourService()
     memory_service = MemoryMatchService()
+    word_service = WordDuelService()
+    battleship_service = BattleshipService()
 
     game_services = {
         'tic-tac-toe': ttt_service,
         'rock-paper-scissors': rps_service,
         'connect-four': c4_service,
         'memory-match': memory_service,
+        'word-duel': word_service,
+        'battleship': battleship_service,
     }
 
     # ── REST Routers ─────────────────────────────────────────

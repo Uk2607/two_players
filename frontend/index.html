@@ -24,6 +24,8 @@
     <link rel="stylesheet" href="css/screens/tic-tac-toe.css">
     <link rel="stylesheet" href="css/screens/rock-paper-scissors.css">
     <link rel="stylesheet" href="css/screens/connect-four.css">
+    <link rel="stylesheet" href="css/screens/memory-match.css">
+    <link rel="stylesheet" href="css/screens/word-duel.css">
 </head>
 <body>
     <!-- ═══════ Animated Background ═══════ -->
@@ -445,6 +447,163 @@
                 <div class="modal-actions">
                     <button id="btn-c4-rematch" class="btn-primary">Play Again</button>
                     <button id="btn-c4-back" class="btn-secondary">Leave to Lobby</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ SCREEN 7: Game Arena (Memory Match) ═══════ -->
+    <section id="screen-memory-arena" class="screen">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="btn-leave-memory" class="btn-icon-only" title="Back to Games">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="top-bar-center">
+                <h2 id="memory-game-title">Memory Match</h2>
+            </div>
+            <div class="top-bar-right">
+                <div class="pair-info">
+                    <span class="pair-badge" id="memory-pair-badge">You & Friend</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="arena-content memory-content">
+            <!-- Scoreboard -->
+            <div class="memory-scoreboard">
+                <div class="memory-score-card player-p1-card" id="memory-card-p1">
+                    <div class="avatar memory-avatar" id="memory-avatar-p1">1</div>
+                    <div class="memory-player-details">
+                        <span class="memory-player-name" id="memory-name-p1">Player 1</span>
+                        <span class="memory-pairs-pill" id="memory-pairs-p1">0 pairs</span>
+                    </div>
+                    <div class="memory-score" id="memory-score-p1">0</div>
+                </div>
+
+                <div class="memory-tracker">
+                    <span class="memory-pairs-left-badge" id="memory-pairs-left">8 Left</span>
+                    <span class="memory-total-pairs">Pairs Duel</span>
+                </div>
+
+                <div class="memory-score-card player-p2-card" id="memory-card-p2">
+                    <div class="memory-score" id="memory-score-p2">0</div>
+                    <div class="memory-player-details">
+                        <span class="memory-player-name" id="memory-name-p2">Player 2</span>
+                        <span class="memory-pairs-pill" id="memory-pairs-p2">0 pairs</span>
+                    </div>
+                    <div class="avatar memory-avatar" id="memory-avatar-p2">2</div>
+                </div>
+            </div>
+
+            <!-- Turn Banner -->
+            <div class="memory-turn-banner" id="memory-turn-banner">
+                <span class="memory-turn-dot" id="memory-turn-dot"></span>
+                <span id="memory-turn-text">Flip 2 cards to find a match!</span>
+            </div>
+
+            <!-- 4x4 Grid Board -->
+            <div class="memory-grid" id="memory-grid">
+                <!-- 16 flip cards injected by JS -->
+            </div>
+        </main>
+
+        <!-- Round Result Modal -->
+        <div id="memory-result-modal" class="modal-overlay hidden">
+            <div class="modal glass-card">
+                <div class="modal-icon" id="memory-result-icon">🏆</div>
+                <h3 id="memory-result-title">Victory!</h3>
+                <p id="memory-result-sub">Alice found 5 pairs and won!</p>
+                <div class="modal-actions">
+                    <button id="btn-memory-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-memory-back" class="btn-secondary">Leave to Lobby</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ SCREEN 8: Game Arena (Word Duel) ═══════ -->
+    <section id="screen-word-arena" class="screen">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="btn-leave-word" class="btn-icon-only" title="Back to Games">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="top-bar-center">
+                <h2 id="word-game-title">Word Duel</h2>
+            </div>
+            <div class="top-bar-right">
+                <div class="pair-info">
+                    <span class="pair-badge" id="word-pair-badge">You & Friend</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="arena-content word-content">
+            <!-- Scoreboard -->
+            <div class="word-scoreboard">
+                <div class="word-score-card player-p1-card" id="word-card-p1">
+                    <div class="avatar word-avatar" id="word-avatar-p1">1</div>
+                    <div class="word-player-details">
+                        <span class="word-player-name" id="word-name-p1">Player 1</span>
+                        <span class="word-pts-pill">Duelist</span>
+                    </div>
+                    <div class="word-score" id="word-score-p1">0</div>
+                </div>
+
+                <div class="word-tracker">
+                    <span class="word-round-badge" id="word-round-badge">Round 1 / 3</span>
+                    <div class="word-strikes-container" id="word-strikes">❤️❤️❤️❤️❤️❤️</div>
+                </div>
+
+                <div class="word-score-card player-p2-card" id="word-card-p2">
+                    <div class="word-score" id="word-score-p2">0</div>
+                    <div class="word-player-details">
+                        <span class="word-player-name" id="word-name-p2">Player 2</span>
+                        <span class="word-pts-pill">Duelist</span>
+                    </div>
+                    <div class="avatar word-avatar" id="word-avatar-p2">2</div>
+                </div>
+            </div>
+
+            <!-- Turn Banner -->
+            <div class="word-turn-banner" id="word-turn-banner">
+                <span class="word-turn-dot" id="word-turn-dot"></span>
+                <span id="word-turn-text">Guess a letter or solve the word!</span>
+            </div>
+
+            <!-- Word Letter Blanks Display -->
+            <div class="word-blanks-stage" id="word-blanks">
+                <!-- Blanks injected by JS -->
+            </div>
+
+            <!-- Direct Solve Input Bar -->
+            <div class="word-solve-bar">
+                <input type="text" id="word-solve-input" class="word-solve-input" placeholder="SOLVE FULL WORD..." maxlength="12" autocomplete="off" />
+                <button id="btn-word-solve" class="word-solve-btn">SOLVE (+50)</button>
+            </div>
+
+            <!-- Virtual QWERTY Keyboard -->
+            <div class="word-keyboard" id="word-keyboard">
+                <!-- Keys injected by JS -->
+            </div>
+        </main>
+
+        <!-- Round / Match Result Modal -->
+        <div id="word-result-modal" class="modal-overlay hidden">
+            <div class="modal glass-card">
+                <div class="modal-icon" id="word-result-icon">🏆</div>
+                <h3 id="word-result-title">Victory!</h3>
+                <p id="word-result-sub">Alice solved the word!</p>
+                <div class="modal-actions">
+                    <button id="btn-word-rematch" class="btn-primary">Next Round</button>
+                    <button id="btn-word-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
         </div>

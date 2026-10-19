@@ -14,6 +14,8 @@ import { GamesScreen } from './screens/games-screen.js';
 import { TicTacToeGame } from './games/tic-tac-toe.js';
 import { RockPaperScissorsGame } from './games/rock-paper-scissors.js';
 import { ConnectFourGame } from './games/connect-four.js';
+import { MemoryMatchGame } from './games/memory-match.js';
+import { WordDuelGame } from './games/word-duel.js';
 
 class App {
     constructor() {
@@ -33,6 +35,8 @@ class App {
         screenManager.register('game-arena', '#screen-game-arena');
         screenManager.register('rps-arena', '#screen-rps-arena');
         screenManager.register('c4-arena', '#screen-c4-arena');
+        screenManager.register('memory-arena', '#screen-memory-arena');
+        screenManager.register('word-arena', '#screen-word-arena');
 
         // Initialize screens
         this.registerScreen = new RegisterScreen({
@@ -61,6 +65,14 @@ class App {
             onBackToGames: () => this.handleBackToGames(),
         });
 
+        this.memoryGame = new MemoryMatchGame({
+            onBackToGames: () => this.handleBackToGames(),
+        });
+
+        this.wordGame = new WordDuelGame({
+            onBackToGames: () => this.handleBackToGames(),
+        });
+
         // Setup global server socket listeners
         this.setupGlobalSocketHandlers();
 
@@ -78,7 +90,7 @@ class App {
         // Setup browser history back button handling
         window.addEventListener('popstate', (e) => {
             const screen = e.state?.screen || 'register';
-            if (screenManager.current === 'game-arena' || screenManager.current === 'rps-arena' || screenManager.current === 'c4-arena' || screenManager.current === 'games') {
+            if (screenManager.current === 'game-arena' || screenManager.current === 'rps-arena' || screenManager.current === 'c4-arena' || screenManager.current === 'memory-arena' || screenManager.current === 'word-arena' || screenManager.current === 'games') {
                 this.handleLeaveGameRoom();
             } else if (screenManager.current === 'lobby' && screen === 'register') {
                 this.handleLogoutLobby();
@@ -204,6 +216,14 @@ class App {
             this.c4Game.start(roomData, this.localPlayer, state);
             screenManager.show('c4-arena');
             window.history.pushState({ screen: 'c4-arena' }, '', '#c4-arena');
+        } else if (gameId === 'memory-match') {
+            this.memoryGame.start(roomData, this.localPlayer, state);
+            screenManager.show('memory-arena');
+            window.history.pushState({ screen: 'memory-arena' }, '', '#memory-arena');
+        } else if (gameId === 'word-duel') {
+            this.wordGame.start(roomData, this.localPlayer, state);
+            screenManager.show('word-arena');
+            window.history.pushState({ screen: 'word-arena' }, '', '#word-arena');
         } else {
             toastService.info(`${gameId} arena coming next!`);
         }
@@ -230,6 +250,8 @@ class App {
         this.ticTacToeGame.reset();
         this.rpsGame.reset();
         this.c4Game.reset();
+        this.memoryGame.reset();
+        this.wordGame.reset();
         this.gamesScreen.clearRoom();
         this.registerScreen.reset();
         screenManager.show('register');
@@ -248,6 +270,8 @@ class App {
         this.ticTacToeGame.reset();
         this.rpsGame.reset();
         this.c4Game.reset();
+        this.memoryGame.reset();
+        this.wordGame.reset();
 
         // 2. Clear current room on games screen and app state
         this.currentRoom = null;

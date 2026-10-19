@@ -1,0 +1,312 @@
+/**
+ * Battleship Arena Styles
+ * High-tech tactical naval radar interface with dual grids and torpedo effects.
+ */
+
+.battleship-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ── Scoreboard ────────────────────────────────────────────── */
+.bs-scoreboard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.bs-score-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+}
+
+.bs-score-card.player-p2-card {
+    justify-content: flex-end;
+}
+
+.bs-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.player-p1-card .bs-avatar {
+    background: linear-gradient(135deg, #00f0ff, #0077ff);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+}
+
+.player-p2-card .bs-avatar {
+    background: linear-gradient(135deg, #2ed573, #10ac84);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(46, 213, 115, 0.4);
+}
+
+.bs-player-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bs-player-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.bs-fleet-status-pill {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    display: inline-block;
+    width: fit-content;
+}
+
+.bs-score {
+    font-size: 1.8rem;
+    font-weight: 900;
+    font-family: var(--font-display, inherit);
+    min-width: 32px;
+    text-align: center;
+}
+
+.player-p1-card .bs-score {
+    color: #00f0ff;
+    text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+.player-p2-card .bs-score {
+    color: #2ed573;
+    text-shadow: 0 0 12px rgba(46, 213, 115, 0.6);
+}
+
+.bs-tracker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0 var(--space-2);
+}
+
+.bs-phase-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.bs-hits-counter {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* ── Turn Banner ────────────────────────────────────────────── */
+.bs-turn-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-full);
+    background: var(--surface-glass);
+    border: 1px solid var(--border-glass);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.bs-turn-banner.my-turn {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: rgba(0, 240, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.bs-turn-banner.direct-hit {
+    background: rgba(255, 75, 75, 0.2);
+    border-color: #ff4757;
+    color: #ff4757;
+    box-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
+}
+
+.bs-turn-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #00f0ff;
+    box-shadow: 0 0 10px #00f0ff;
+    transition: all 0.25s ease;
+}
+
+.bs-turn-dot.p2 {
+    background: #2ed573;
+    box-shadow: 0 0 10px #2ed573;
+}
+
+/* ── Deployment Phase UI ───────────────────────────────────── */
+.bs-deployment-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    width: 100%;
+}
+
+.bs-deployment-actions {
+    display: flex;
+    gap: var(--space-3);
+    width: 100%;
+    max-width: 360px;
+}
+
+.bs-deployment-actions button {
+    flex: 1;
+}
+
+/* ── Dual Naval Grid Stage ─────────────────────────────────── */
+.bs-theatre-stage {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: var(--space-5);
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.bs-grid-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.bs-grid-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.bs-grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 5px;
+    width: 280px;
+    height: 280px;
+    padding: 10px;
+    background: radial-gradient(circle at center, rgba(10, 30, 50, 0.8), rgba(5, 15, 30, 0.95));
+    border: 2px solid rgba(0, 240, 255, 0.3);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 240, 255, 0.1);
+    position: relative;
+    user-select: none;
+}
+
+/* Mini friendly fleet grid */
+.bs-grid-container.mini {
+    width: 220px;
+    height: 220px;
+    gap: 4px;
+    padding: 8px;
+    border-color: rgba(46, 213, 115, 0.3);
+}
+
+.bs-cell {
+    width: 100%;
+    height: 100%;
+    border-radius: 4px;
+    background: rgba(0, 240, 255, 0.05);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: default;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+/* Targetable enemy cells */
+.bs-grid-container.targetable .bs-cell:hover:not(.hit):not(.miss) {
+    background: rgba(255, 71, 87, 0.25);
+    border-color: #ff4757;
+    cursor: crosshair;
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(255, 71, 87, 0.5);
+}
+
+/* Ship cell on friendly waters */
+.bs-cell.ship {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.4), rgba(0, 119, 255, 0.5));
+    border-color: #00f0ff;
+    box-shadow: inset 0 0 8px rgba(0, 240, 255, 0.5);
+}
+
+/* Hit state */
+.bs-cell.hit {
+    background: radial-gradient(circle at center, #ff4757, #990012);
+    border-color: #ff6b81;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.7);
+    animation: hitExplosion 0.4s ease-out;
+}
+
+@keyframes hitExplosion {
+    0% { transform: scale(0.6); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* Miss state */
+.bs-cell.miss {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+    opacity: 0.6;
+}
+
+@media (max-width: 600px) {
+    .bs-theatre-stage {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .bs-grid-container {
+        width: 260px;
+        height: 260px;
+    }
+
+    .bs-grid-container.mini {
+        width: 200px;
+        height: 200px;
+    }
+}

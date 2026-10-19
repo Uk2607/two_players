@@ -10,6 +10,8 @@ from events.tic_tac_toe_events import register_tic_tac_toe_events
 from events.rock_paper_scissors_events import register_rock_paper_scissors_events
 from events.connect_four_events import register_connect_four_events
 from events.memory_match_events import register_memory_match_events
+from events.word_duel_events import register_word_duel_events
+from events.battleship_events import register_battleship_events
 
 
 def register_all_events(socketio, player_service, invite_service, room_service, game_services: dict):
@@ -28,3 +30,7 @@ def register_all_events(socketio, player_service, invite_service, room_service, 
         register_connect_four_events(socketio, room_service, game_services['connect-four'])
     if 'memory-match' in game_services:
         register_memory_match_events(socketio, room_service, game_services['memory-match'])
+    if 'word-duel' in game_services:
+        register_word_duel_events(socketio, room_service, game_services['word-duel'])
+    if 'battleship' in game_services:
+        register_battleship_events(socketio, room_service, game_services['battleship'])

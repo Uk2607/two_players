@@ -7,6 +7,8 @@ from services.tic_tac_toe_service import TicTacToeService
 from services.rock_paper_scissors_service import RockPaperScissorsService
 from services.connect_four_service import ConnectFourService
 from services.memory_match_service import MemoryMatchService
+from services.word_duel_service import WordDuelService
+from services.battleship_service import BattleshipService
 
 __all__ = [
     'PlayerService',
@@ -16,4 +18,6 @@ __all__ = [
     'RockPaperScissorsService',
     'ConnectFourService',
     'MemoryMatchService',
+    'WordDuelService',
+    'BattleshipService',
 ]
