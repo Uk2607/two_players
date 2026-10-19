@@ -51,6 +51,9 @@ class App {
         // Setup global server socket listeners
         this.setupGlobalSocketHandlers();
 
+        // Setup browser lifecycle listeners for clean disconnect
+        this.setupWindowUnloadHandlers();
+
         // Connect to Socket.IO backend
         this.registerScreen.setConnectionStatus('connecting', 'Connecting to server...');
 
@@ -60,7 +63,10 @@ class App {
             },
             onDisconnect: () => {
                 this.registerScreen.setConnectionStatus('error', 'Disconnected from server');
-                toastService.error('Connection to server lost. Reconnecting...');
+                // If in active room when disconnecting, return to lobby/register
+                if (this.currentRoom) {
+                    this.endSessionAndReturnToLobby('Connection to server lost. Reconnecting...', 'error');
+                }
             },
             onError: (err) => {
                 this.registerScreen.setConnectionStatus('error', 'Server unreachable');
@@ -82,6 +88,34 @@ class App {
         socketService.on('registered', (data) => {
             this.handleRegistered(data);
         });
+
+        // Partner closed the tab or lost connection
+        socketService.on('partner_disconnected', (data) => {
+            const partnerName = data?.name || 'Your partner';
+            this.endSessionAndReturnToLobby(`${partnerName} closed the page. Game ended.`, 'error');
+        });
+
+        // Partner voluntarily left the game
+        socketService.on('partner_left', (data) => {
+            const partnerName = data?.name || 'Your partner';
+            this.endSessionAndReturnToLobby(`${partnerName} left the game. Returned to player list.`, 'info');
+        });
+
+        // Local player voluntary leave confirmed by server
+        socketService.on('left_pair', () => {
+            this.endSessionAndReturnToLobby('You left the game and returned to player list.', 'info');
+        });
+    }
+
+    setupWindowUnloadHandlers() {
+        const notifyLeave = () => {
+            if (this.currentRoom && socketService.connected) {
+                socketService.emit('leave_pair');
+            }
+        };
+
+        window.addEventListener('beforeunload', notifyLeave);
+        window.addEventListener('pagehide', notifyLeave);
     }
 
     handleRegistered(player) {
@@ -111,8 +145,33 @@ class App {
     }
 
     handleLeaveGameRoom() {
+        if (socketService.connected) {
+            socketService.emit('leave_pair');
+        } else {
+            this.endSessionAndReturnToLobby();
+        }
+    }
+
+    /**
+     * Terminate the active game session, reset all state, and navigate to the Lobby player list.
+     * @param {string} [message] - Optional message for toast notification
+     * @param {'info'|'success'|'error'} [type] - Toast style type
+     */
+    endSessionAndReturnToLobby(message = '', type = 'info') {
+        // 1. Reset game arena state and close any open modals
+        this.ticTacToeGame.reset();
+
+        // 2. Clear current room on games screen and app state
         this.currentRoom = null;
+        this.gamesScreen.clearRoom();
+
+        // 3. Return to the Player List lobby screen
         screenManager.show('lobby');
+
+        // 4. Show notification if a message was provided
+        if (message) {
+            toastService.show(message, type);
+        }
     }
 }
 

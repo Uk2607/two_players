@@ -40,21 +40,18 @@ def register_game_events(socketio, player_service, room_service, ttt_service):
         socketio.emit('game_selected', payload, to=room.player2_sid)
 
     @socketio.on('leave_pair')
-    def handle_leave_pair(data):
+    def handle_leave_pair(data=None):
         from flask import request
-        from flask_socketio import emit, leave_room
+        from flask_socketio import emit
 
         sid = request.sid
         player = player_service.get(sid)
-        if not player:
-            return
+        player_name = player.name if player else 'Your partner'
 
         partner_sid = room_service.leave_pair(sid)
 
         if partner_sid:
-            partner = player_service.get(partner_sid)
-            if partner:
-                socketio.emit('partner_left', {'name': player.name}, to=partner_sid)
+            socketio.emit('partner_left', {'name': player_name}, to=partner_sid)
 
         emit('left_pair', {})
         broadcast_players()

@@ -49,18 +49,21 @@ export class TicTacToeGame {
     }
 
     _setupListeners() {
-        if (this._btnLeaveGame) {
-            this._btnLeaveGame.addEventListener('click', () => {
-                this.hideResultModal();
+        const handleLeave = () => {
+            this.hideResultModal();
+            if (socketService.connected) {
+                socketService.emit('leave_pair');
+            } else {
                 this._onBackToGames?.();
-            });
+            }
+        };
+
+        if (this._btnLeaveGame) {
+            this._btnLeaveGame.addEventListener('click', handleLeave);
         }
 
         if (this._btnBack) {
-            this._btnBack.addEventListener('click', () => {
-                this.hideResultModal();
-                this._onBackToGames?.();
-            });
+            this._btnBack.addEventListener('click', handleLeave);
         }
 
         if (this._btnRematch) {
@@ -231,5 +234,25 @@ export class TicTacToeGame {
         if (this._resultModal) {
             this._resultModal.classList.add('hidden');
         }
+    }
+
+    /** Clean up and reset game arena state when session ends. */
+    reset() {
+        this.hideResultModal();
+        this._roomData = null;
+        this._state = null;
+        this._cells.forEach(cell => {
+            cell.className = 'ttt-cell';
+            cell.textContent = '';
+            cell.disabled = true;
+        });
+        if (this._turnText) {
+            this._turnText.textContent = 'Waiting for game start...';
+        }
+        if (this._turnBanner) {
+            this._turnBanner.className = 'ttt-turn-banner';
+        }
+        if (this._cardX) this._cardX.className = 'ttt-score-card player-x-card';
+        if (this._cardO) this._cardO.className = 'ttt-score-card player-o-card';
     }
 }

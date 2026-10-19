@@ -60,22 +60,19 @@ export class GamesScreen {
             }, 600);
         });
 
-        socketService.on('left_pair', () => {
-            this._roomData = null;
-            this._onLeave?.();
-        });
+    }
 
-        socketService.on('partner_left', (data) => {
-            toastService.info(`${data.name} left the room.`);
-            this._roomData = null;
-            this._onLeave?.();
-        });
-
-        socketService.on('partner_disconnected', (data) => {
-            toastService.error(`${data.name} disconnected.`);
-            this._roomData = null;
-            this._onLeave?.();
-        });
+    /** Reset room state and badges. */
+    clearRoom() {
+        this._roomData = null;
+        if (this._pairBadge) {
+            this._pairBadge.textContent = 'You & Friend';
+        }
+        if (this._gamesGrid) {
+            this._gamesGrid.querySelectorAll('.game-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+        }
     }
 
     /**

@@ -62,16 +62,20 @@ class RoomService:
         Returns the partner's SID or None.
         """
         player = self._player_repo.get(sid)
-        if not player:
-            return None
+        partner_sid = player.partner_sid if player else None
 
-        partner_sid = player.partner_sid
+        # Fallback to room lookup if partner_sid wasn't set
+        rooms = self._room_repo.find_by_player(sid)
+        if rooms and not partner_sid:
+            room = rooms[0]
+            partner_sid = room.player2_sid if room.player1_sid == sid else room.player1_sid
 
         # Remove rooms
         self._room_repo.remove_by_player(sid)
 
         # Reset the leaving player
-        player.reset()
+        if player:
+            player.reset()
 
         # Reset the partner
         if partner_sid:
