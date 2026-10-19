@@ -1,0 +1,315 @@
+/**
+ * Memory Match Arena Styles
+ * 3D Holographic Flip Cards with particle matches and cyber neon frames.
+ */
+
+.memory-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    max-width: 580px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+/* ── Scoreboard ────────────────────────────────────────────── */
+.memory-scoreboard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.memory-score-card {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex: 1;
+}
+
+.memory-score-card.player-p2-card {
+    justify-content: flex-end;
+}
+
+.memory-avatar {
+    width: 44px;
+    height: 44px;
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.player-p1-card .memory-avatar {
+    background: linear-gradient(135deg, #00f0ff, #0077ff);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.4);
+}
+
+.player-p2-card .memory-avatar {
+    background: linear-gradient(135deg, #ff0077, #7928ca);
+    color: #fff;
+    box-shadow: 0 0 16px rgba(255, 0, 119, 0.4);
+}
+
+.memory-player-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.memory-player-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    max-width: 110px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.memory-pairs-pill {
+    font-size: 0.72rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    display: inline-block;
+    width: fit-content;
+}
+
+.player-p1-card .memory-pairs-pill {
+    color: #00f0ff;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.player-p2-card .memory-pairs-pill {
+    color: #ff0077;
+    border: 1px solid rgba(255, 0, 119, 0.3);
+}
+
+.memory-score {
+    font-size: 1.8rem;
+    font-weight: 900;
+    font-family: var(--font-display, inherit);
+    min-width: 32px;
+    text-align: center;
+}
+
+.player-p1-card .memory-score {
+    color: #00f0ff;
+    text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+.player-p2-card .memory-score {
+    color: #ff0077;
+    text-shadow: 0 0 12px rgba(255, 0, 119, 0.6);
+}
+
+.memory-tracker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0 var(--space-2);
+}
+
+.memory-pairs-left-badge {
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.memory-total-pairs {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+}
+
+/* ── Turn Banner ────────────────────────────────────────────── */
+.memory-turn-banner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-5);
+    border-radius: var(--radius-full);
+    background: var(--surface-glass);
+    border: 1px solid var(--border-glass);
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+.memory-turn-banner.my-turn {
+    background: rgba(0, 240, 255, 0.15);
+    border-color: rgba(0, 240, 255, 0.5);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+.memory-turn-banner.matched-bonus {
+    background: rgba(46, 213, 115, 0.2);
+    border-color: rgba(46, 213, 115, 0.5);
+    color: #2ed573;
+    box-shadow: 0 0 20px rgba(46, 213, 115, 0.3);
+}
+
+.memory-turn-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #00f0ff;
+    box-shadow: 0 0 10px #00f0ff;
+    transition: all 0.25s ease;
+}
+
+.memory-turn-dot.p2 {
+    background: #ff0077;
+    box-shadow: 0 0 10px #ff0077;
+}
+
+/* ── 4x4 Grid Board ────────────────────────────────────────── */
+.memory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 12px;
+    width: 100%;
+    max-width: 480px;
+    aspect-ratio: 1 / 1;
+    perspective: 1000px;
+    user-select: none;
+}
+
+/* Flip Card Container */
+.memory-card {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    position: relative;
+    border-radius: var(--radius-lg);
+    outline: none;
+}
+
+.memory-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
+    border-radius: var(--radius-lg);
+}
+
+/* Flipped state */
+.memory-card.flipped .memory-card-inner,
+.memory-card.matched .memory-card-inner {
+    transform: rotateY(180deg);
+}
+
+/* Card Front (Face-down) */
+.memory-card-front,
+.memory-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.memory-card-front {
+    background: linear-gradient(135deg, rgba(25, 28, 55, 0.9), rgba(14, 16, 35, 0.95));
+    border: 2px solid rgba(0, 240, 255, 0.25);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5), inset 0 0 12px rgba(0, 240, 255, 0.1);
+    transition: all 0.25s ease;
+}
+
+.memory-card:hover:not(.flipped):not(.matched) .memory-card-front {
+    border-color: #00f0ff;
+    box-shadow: 0 8px 24px rgba(0, 240, 255, 0.35), inset 0 0 16px rgba(0, 240, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+.memory-card-icon-back {
+    font-size: 1.8rem;
+    color: rgba(255, 255, 255, 0.25);
+    transition: transform 0.25s ease;
+}
+
+.memory-card:hover:not(.flipped):not(.matched) .memory-card-icon-back {
+    transform: scale(1.15);
+    color: #00f0ff;
+}
+
+/* Card Back (Face-up symbol) */
+.memory-card-back {
+    background: linear-gradient(135deg, #1b1e3d, #101228);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    transform: rotateY(180deg);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
+}
+
+.memory-card-symbol {
+    font-size: 2.6rem;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+    user-select: none;
+}
+
+/* Matched Card State */
+.memory-card.matched .memory-card-back {
+    border-color: #2ed573;
+    background: linear-gradient(135deg, rgba(46, 213, 115, 0.15), rgba(15, 20, 30, 0.95));
+    box-shadow: 0 0 25px rgba(46, 213, 115, 0.4), inset 0 0 15px rgba(46, 213, 115, 0.25);
+    animation: matchCardPulse 0.5s ease-out;
+}
+
+@keyframes matchCardPulse {
+    0% { transform: rotateY(180deg) scale(0.9); }
+    50% { transform: rotateY(180deg) scale(1.1); }
+    100% { transform: rotateY(180deg) scale(1); }
+}
+
+/* Mismatch Shake */
+@keyframes cardShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+.memory-card.mismatch .memory-card-inner {
+    animation: cardShake 0.4s ease-in-out;
+}
+
+.memory-card.matched {
+    cursor: default;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .memory-grid {
+        gap: 8px;
+    }
+
+    .memory-card-symbol {
+        font-size: 2rem;
+    }
+
+    .memory-card-icon-back {
+        font-size: 1.4rem;
+    }
+}
