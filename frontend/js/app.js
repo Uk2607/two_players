@@ -18,6 +18,11 @@ import { MemoryMatchGame } from './games/memory-match.js';
 import { WordDuelGame } from './games/word-duel.js';
 import { BattleshipGame } from './games/battleship.js';
 
+// Prevent Chromium PNA issues when opened via 0.0.0.0
+if (window.location.hostname === '0.0.0.0') {
+    window.location.hostname = 'localhost';
+}
+
 class App {
     constructor() {
         /** @type {{ id: string, name: string } | null} */
@@ -117,16 +122,22 @@ class App {
         socketService.connect({
             onConnect: () => {
                 this.registerScreen.setConnectionStatus('connected', 'Connected to arena');
+                this.registerScreen.refresh();
+            },
+            onReconnectAttempt: (attempt) => {
+                this.registerScreen.setConnectionStatus('connecting', `Connecting to server (attempt ${attempt})...`);
             },
             onDisconnect: () => {
                 this.registerScreen.setConnectionStatus('error', 'Disconnected from server');
+                this.registerScreen.enableSubmit();
                 // If in active room when disconnecting, return to lobby/register
                 if (this.currentRoom) {
                     this.endSessionAndReturnToLobby('Connection to server lost. Reconnecting...', 'error');
                 }
             },
             onError: (err) => {
-                this.registerScreen.setConnectionStatus('error', 'Server unreachable');
+                this.registerScreen.setConnectionStatus('error', 'Server unreachable — retrying...');
+                this.registerScreen.enableSubmit();
             },
         });
 
@@ -140,6 +151,7 @@ class App {
         socketService.on('error', (err) => {
             const message = typeof err === 'object' && err.message ? err.message : String(err);
             toastService.error(message);
+            this.registerScreen.enableSubmit();
         });
 
         // Successful registration
@@ -217,6 +229,7 @@ class App {
     }
 
     handleRegistered(player) {
+        this.registerScreen.enableSubmit();
         this.localPlayer = player;
         this.lobbyScreen.setCurrentPlayer(player);
         screenManager.show('lobby');

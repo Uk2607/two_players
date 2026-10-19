@@ -18,38 +18,95 @@ export class RegisterScreen {
         this._btnJoin = $('#btn-join');
         this._connectionStatus = $('#connection-status');
         this._statusText = this._connectionStatus?.querySelector('.status-text');
+        this._submitTimeout = null;
+
+        // Restore previously remembered nickname from localStorage
+        try {
+            const savedName = localStorage.getItem('two_players_player_name');
+            if (savedName && this._nameInput && !this._nameInput.value) {
+                this._nameInput.value = savedName;
+            }
+        } catch (_) {}
 
         this._setupListeners();
+        // Immediately validate input on init (handles autofill and restored name)
+        this._validateInput();
     }
 
     _setupListeners() {
         if (!this._nameInput || !this._btnJoin) return;
 
-        this._nameInput.addEventListener('input', () => this._validateInput());
+        // Multiple events guarantee autofill, pasting, and typing are caught
+        ['input', 'change', 'keyup', 'paste', 'focus'].forEach((evt) => {
+            this._nameInput.addEventListener(evt, () => this._validateInput());
+        });
+
         this._nameInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !this._btnJoin.disabled) {
-                this._submit();
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this._validateInput();
+                if (!this._btnJoin.disabled) {
+                    this._submit();
+                }
             }
         });
 
-        this._btnJoin.addEventListener('click', () => this._submit());
+        this._btnJoin.addEventListener('click', (e) => {
+            e.preventDefault();
+            this._submit();
+        });
     }
 
     _validateInput() {
-        const val = this._nameInput.value.trim();
-        this._btnJoin.disabled = val.length === 0 || val.length > CONFIG.MAX_NAME_LENGTH;
+        const val = this._nameInput ? this._nameInput.value.trim() : '';
+        const isValid = val.length > 0 && val.length <= CONFIG.MAX_NAME_LENGTH;
+        if (this._btnJoin) {
+            this._btnJoin.disabled = !isValid;
+        }
+        return isValid;
+    }
+
+    _setButtonLoading(loading) {
+        if (!this._btnJoin) return;
+        const btnText = this._btnJoin.querySelector('.btn-text');
+        if (btnText) {
+            btnText.textContent = loading ? 'Entering...' : 'Enter Arena';
+        }
+    }
+
+    enableSubmit() {
+        if (this._submitTimeout) {
+            clearTimeout(this._submitTimeout);
+            this._submitTimeout = null;
+        }
+        this._setButtonLoading(false);
+        this._validateInput();
     }
 
     _submit() {
-        const name = this._nameInput.value.trim();
+        const name = this._nameInput ? this._nameInput.value.trim() : '';
         if (!name) return;
 
         if (!socketService.connected) {
-            toastService.error('Not connected to game server. Please wait...');
+            toastService.error('Connecting to server... Please wait a second and try again.');
+            this.enableSubmit();
             return;
         }
 
+        // Save name for convenience across page reloads
+        try {
+            localStorage.setItem('two_players_player_name', name);
+        } catch (_) {}
+
         this._btnJoin.disabled = true;
+        this._setButtonLoading(true);
+
+        // Safety timeout: re-enable after 6 seconds if server has not responded
+        if (this._submitTimeout) clearTimeout(this._submitTimeout);
+        this._submitTimeout = setTimeout(() => {
+            this.enableSubmit();
+        }, 6000);
+
         socketService.emit('register', { name });
     }
 
@@ -73,17 +130,13 @@ export class RegisterScreen {
 
     /** Reset input state. */
     reset() {
-        if (this._nameInput) {
-            this._nameInput.value = '';
-        }
-        if (this._btnJoin) {
-            this._btnJoin.disabled = true;
-        }
+        this.enableSubmit();
     }
 
     /** Refresh validation state based on current input value. */
     refresh() {
-        this._validateInput();
+        this.enableSubmit();
     }
 }
+
 

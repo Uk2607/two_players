@@ -16,10 +16,17 @@ class SocketService {
 
     /**
      * Initialize the Socket.IO connection.
-     * @param {object} callbacks - { onConnect, onDisconnect, onError }
+     * @param {object} callbacks - { onConnect, onDisconnect, onError, onReconnectAttempt }
      */
-    connect({ onConnect, onDisconnect, onError } = {}) {
-        // `io` is loaded globally from the CDN <script> tag
+    connect({ onConnect, onDisconnect, onError, onReconnectAttempt } = {}) {
+        if (this._socket) {
+            if (!this._socket.connected) {
+                this._socket.connect();
+            }
+            return;
+        }
+
+        // `io` is loaded globally from the CDN / vendored <script> tag
         this._socket = io(CONFIG.SERVER_URL, CONFIG.SOCKET_OPTIONS);
 
         // Attach any queued event listeners
@@ -33,9 +40,21 @@ class SocketService {
             onConnect?.();
         });
 
-        this._socket.on('disconnect', () => {
-            console.log('[Socket] Disconnected');
-            onDisconnect?.();
+        if (this._socket.io) {
+            this._socket.io.on('reconnect_attempt', (attempt) => {
+                console.log('[Socket] Reconnect attempt:', attempt);
+                onReconnectAttempt?.(attempt);
+            });
+
+            this._socket.io.on('reconnect', () => {
+                console.log('[Socket] Reconnected successfully');
+                onConnect?.();
+            });
+        }
+
+        this._socket.on('disconnect', (reason) => {
+            console.log('[Socket] Disconnected:', reason);
+            onDisconnect?.(reason);
         });
 
         this._socket.on('connect_error', (err) => {
