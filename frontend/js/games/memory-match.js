@@ -55,6 +55,7 @@ export class MemoryMatchGame {
         this.resultTitle = document.getElementById('memory-result-title');
         this.resultSub = document.getElementById('memory-result-sub');
         this.btnRematch = document.getElementById('btn-memory-rematch');
+        this.btnSwitch = document.getElementById('btn-memory-switch');
         this.btnBack = document.getElementById('btn-memory-back');
     }
 
@@ -63,11 +64,32 @@ export class MemoryMatchGame {
     }
 
     bindEvents() {
-        // Leave / Back button
-        if (this.btnLeave) {
-            this.btnLeave.addEventListener('click', () => {
+        const handleSwitchGame = () => {
+            this.clearMismatchTimer();
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
+                socketService.emit('switch_game');
+            } else {
+                this.onBackToGames?.();
+            }
+        };
+
+        const handleLeaveToLobby = () => {
+            this.clearMismatchTimer();
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
                 socketService.emit('leave_pair');
-            });
+            }
+        };
+
+        // Top back button switches game
+        if (this.btnLeave) {
+            this.btnLeave.addEventListener('click', handleSwitchGame);
+        }
+
+        // Modal Switch Game button
+        if (this.btnSwitch) {
+            this.btnSwitch.addEventListener('click', handleSwitchGame);
         }
 
         // Card clicks
@@ -91,10 +113,7 @@ export class MemoryMatchGame {
 
         // Back to lobby from modal
         if (this.btnBack) {
-            this.btnBack.addEventListener('click', () => {
-                this.resultModal?.classList.add('hidden');
-                socketService.emit('leave_pair');
-            });
+            this.btnBack.addEventListener('click', handleLeaveToLobby);
         }
 
         // Socket listener
@@ -259,13 +278,13 @@ export class MemoryMatchGame {
             cardEl.classList.toggle('mismatch', isMismatch);
         });
 
-        // If mismatch occurred, auto-clear after 1.2s
+        // If mismatch occurred, auto-clear after 1.5s
         if (state.last_flip_result === 'mismatch') {
             this.mismatchTimeout = setTimeout(() => {
                 if (state.turn_sid === my_sid) {
                     socketService.emit('memory_end_mismatch', { room_id: this.getRoomId() });
                 }
-            }, 1200);
+            }, 1500);
         }
 
         // 4. Match Ended Modal

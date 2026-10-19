@@ -67,6 +67,7 @@ export class BattleshipGame {
         this.resultTitle = document.getElementById('bs-result-title');
         this.resultSub = document.getElementById('bs-result-sub');
         this.btnRematch = document.getElementById('btn-bs-rematch');
+        this.btnSwitch = document.getElementById('btn-bs-switch');
         this.btnBack = document.getElementById('btn-bs-back');
     }
 
@@ -75,11 +76,30 @@ export class BattleshipGame {
     }
 
     bindEvents() {
-        // Leave / Back button
-        if (this.btnLeave) {
-            this.btnLeave.addEventListener('click', () => {
+        const handleSwitchGame = () => {
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
+                socketService.emit('switch_game');
+            } else {
+                this.onBackToGames?.();
+            }
+        };
+
+        const handleLeaveToLobby = () => {
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
                 socketService.emit('leave_pair');
-            });
+            }
+        };
+
+        // Top back button switches game
+        if (this.btnLeave) {
+            this.btnLeave.addEventListener('click', handleSwitchGame);
+        }
+
+        // Modal Switch Game button
+        if (this.btnSwitch) {
+            this.btnSwitch.addEventListener('click', handleSwitchGame);
         }
 
         // Auto Deploy button

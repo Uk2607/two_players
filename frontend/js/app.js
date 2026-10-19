@@ -96,7 +96,15 @@ class App {
         // Setup browser history back button handling
         window.addEventListener('popstate', (e) => {
             const screen = e.state?.screen || 'register';
-            if (screenManager.current === 'game-arena' || screenManager.current === 'rps-arena' || screenManager.current === 'c4-arena' || screenManager.current === 'memory-arena' || screenManager.current === 'word-arena' || screenManager.current === 'battleship-arena' || screenManager.current === 'games') {
+            const arenaScreens = ['game-arena', 'rps-arena', 'c4-arena', 'memory-arena', 'word-arena', 'battleship-arena'];
+
+            if (arenaScreens.includes(screenManager.current)) {
+                if (socketService.connected) {
+                    socketService.emit('switch_game');
+                } else {
+                    this.handleBackToGames();
+                }
+            } else if (screenManager.current === 'games') {
                 this.handleLeaveGameRoom();
             } else if (screenManager.current === 'lobby' && screen === 'register') {
                 this.handleLogoutLobby();
@@ -144,6 +152,20 @@ class App {
             this.localPlayer = null;
             screenManager.show('register');
             window.history.replaceState({ screen: 'register' }, '', '#register');
+        });
+
+        // Partner switched games (stay paired, go to games screen)
+        socketService.on('game_switched', (data) => {
+            this.ticTacToeGame.reset();
+            this.rpsGame.reset();
+            this.c4Game.reset();
+            this.memoryGame.reset();
+            this.wordGame.reset();
+            this.battleshipGame.reset();
+
+            screenManager.show('games');
+            window.history.pushState({ screen: 'games' }, '', '#games');
+            toastService.info(`${data.requested_by || 'Partner'} returned to Game Selection.`);
         });
 
         // Partner closed the tab or lost connection

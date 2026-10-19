@@ -284,15 +284,21 @@
     100% { transform: rotateY(180deg) scale(1); }
 }
 
-/* Mismatch Shake */
-@keyframes cardShake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-6px); }
-    40%, 80% { transform: translateX(6px); }
+/* Mismatch Shake (Preserves rotateY(180deg) so cards remain face-up while shaking) */
+@keyframes cardShakeFlipped {
+    0%, 100% { transform: rotateY(180deg) translateX(0); }
+    20%, 60% { transform: rotateY(180deg) translateX(-6px); }
+    40%, 80% { transform: rotateY(180deg) translateX(6px); }
 }
 
 .memory-card.mismatch .memory-card-inner {
-    animation: cardShake 0.4s ease-in-out;
+    animation: cardShakeFlipped 0.45s ease-in-out;
+}
+
+.memory-card.mismatch .memory-card-back {
+    border-color: #ff4757;
+    background: linear-gradient(135deg, rgba(255, 71, 87, 0.2), rgba(25, 15, 25, 0.95));
+    box-shadow: 0 0 25px rgba(255, 71, 87, 0.5), inset 0 0 15px rgba(255, 71, 87, 0.25);
 }
 
 .memory-card.matched {

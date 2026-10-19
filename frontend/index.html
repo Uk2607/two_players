@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Two Players | Local Multiplayer Games</title>
-    <meta name="description" content="Play multiplayer games with friends on the same WiFi network. Challenge your friends in real-time!">
+    <meta name="description"
+        content="Play multiplayer games with friends on the same WiFi network. Challenge your friends in real-time!">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <!-- Socket.IO client (local vendored library for offline/LAN multiplayer) -->
     <script src="js/libs/socket.io.min.js"></script>
@@ -28,6 +32,7 @@
     <link rel="stylesheet" href="css/screens/word-duel.css">
     <link rel="stylesheet" href="css/screens/battleship.css">
 </head>
+
 <body>
     <!-- ═══════ Animated Background ═══════ -->
     <div class="bg-animation">
@@ -46,10 +51,12 @@
             <div class="logo-section">
                 <div class="logo-icon">
                     <svg viewBox="0 0 64 64" fill="none">
-                        <circle cx="20" cy="32" r="12" stroke="currentColor" stroke-width="3" opacity="0.8"/>
-                        <circle cx="44" cy="32" r="12" stroke="currentColor" stroke-width="3"/>
-                        <path d="M28 26 L36 38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
-                        <path d="M28 38 L36 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+                        <circle cx="20" cy="32" r="12" stroke="currentColor" stroke-width="3" opacity="0.8" />
+                        <circle cx="44" cy="32" r="12" stroke="currentColor" stroke-width="3" />
+                        <path d="M28 26 L36 38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                            opacity="0.5" />
+                        <path d="M28 38 L36 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                            opacity="0.5" />
                     </svg>
                 </div>
                 <h1 class="logo-title">Two Players</h1>
@@ -59,14 +66,8 @@
             <div class="register-card glass-card">
                 <div class="input-group">
                     <label for="player-name">Choose your name</label>
-                    <input
-                        type="text"
-                        id="player-name"
-                        placeholder="Enter your name..."
-                        maxlength="16"
-                        autocomplete="off"
-                        spellcheck="false"
-                    >
+                    <input type="text" id="player-name" placeholder="Enter your name..." maxlength="16"
+                        autocomplete="off" spellcheck="false">
                     <div class="input-accent"></div>
                 </div>
                 <button id="btn-join" class="btn-primary" disabled>
@@ -89,7 +90,7 @@
             <div class="top-bar-left">
                 <button id="btn-lobby-back" class="btn-icon-only" title="Change Name / Exit">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                 </button>
                 <div class="user-badge">
@@ -110,13 +111,36 @@
         </header>
 
         <main class="lobby-content">
+            <!-- Search Bar (SQL LIKE query filter) -->
+            <div class="lobby-search-container" id="lobby-search-container">
+                <div class="lobby-search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="player-search-input" class="search-input" placeholder="Search players..."
+                        autocomplete="off" spellcheck="false" />
+                    <button id="btn-clear-search" class="btn-clear-search hidden" title="Clear Search">✕</button>
+                </div>
+            </div>
+
+            <!-- Empty Search Results -->
+            <div id="player-search-empty" class="empty-search-state hidden">
+                <div class="empty-icon">🔍</div>
+                <h3>No players found</h3>
+                <p id="player-search-query-text">No online players matched your search</p>
+            </div>
+
             <div id="player-list-empty" class="empty-state">
                 <div class="empty-icon">
                     <svg viewBox="0 0 80 80" fill="none">
-                        <circle cx="40" cy="30" r="14" stroke="currentColor" stroke-width="2.5"/>
-                        <path d="M18 65 C18 50 62 50 62 65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                        <circle cx="58" cy="22" r="6" stroke="currentColor" stroke-width="2" opacity="0.5"/>
-                        <path d="M64 22 L72 22 M68 18 L68 26" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                        <circle cx="40" cy="30" r="14" stroke="currentColor" stroke-width="2.5" />
+                        <path d="M18 65 C18 50 62 50 62 65" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" />
+                        <circle cx="58" cy="22" r="6" stroke="currentColor" stroke-width="2" opacity="0.5" />
+                        <path d="M64 22 L72 22 M68 18 L68 26" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" opacity="0.5" />
                     </svg>
                 </div>
                 <h3>Waiting for players...</h3>
@@ -146,7 +170,7 @@
             <div class="top-bar-left">
                 <button id="btn-leave-pair" class="btn-icon-only" title="Leave">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                 </button>
             </div>
@@ -173,7 +197,7 @@
             <div class="top-bar-left">
                 <button id="btn-leave-game" class="btn-icon-only" title="Back to Games">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                 </button>
             </div>
@@ -244,6 +268,7 @@
                 <p id="ttt-result-sub">Alice won the round</p>
                 <div class="modal-actions">
                     <button id="btn-ttt-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-ttt-switch" class="btn-secondary">Switch Game</button>
                     <button id="btn-ttt-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
@@ -256,7 +281,7 @@
             <div class="top-bar-left">
                 <button id="btn-leave-rps" class="btn-icon-only" title="Back to Games">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                 </button>
             </div>
@@ -366,6 +391,7 @@
                 <p id="rps-result-sub">Alice won the match 3 - 1</p>
                 <div class="modal-actions">
                     <button id="btn-rps-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-rps-switch" class="btn-secondary">Switch Game</button>
                     <button id="btn-rps-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
@@ -378,7 +404,7 @@
             <div class="top-bar-left">
                 <button id="btn-leave-c4" class="btn-icon-only" title="Back to Games">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                 </button>
             </div>
@@ -447,6 +473,7 @@
                 <p id="c4-result-sub">Alice connected 4 discs!</p>
                 <div class="modal-actions">
                     <button id="btn-c4-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-c4-switch" class="btn-secondary">Switch Game</button>
                     <button id="btn-c4-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
@@ -459,7 +486,7 @@
             <div class="top-bar-left">
                 <button id="btn-leave-memory" class="btn-icon-only" title="Back to Games">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                 </button>
             </div>
@@ -520,6 +547,7 @@
                 <p id="memory-result-sub">Alice found 5 pairs and won!</p>
                 <div class="modal-actions">
                     <button id="btn-memory-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-memory-switch" class="btn-secondary">Switch Game</button>
                     <button id="btn-memory-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
@@ -532,7 +560,7 @@
             <div class="top-bar-left">
                 <button id="btn-leave-word" class="btn-icon-only" title="Back to Games">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                 </button>
             </div>
@@ -586,7 +614,8 @@
 
             <!-- Direct Solve Input Bar -->
             <div class="word-solve-bar">
-                <input type="text" id="word-solve-input" class="word-solve-input" placeholder="SOLVE FULL WORD..." maxlength="12" autocomplete="off" />
+                <input type="text" id="word-solve-input" class="word-solve-input" placeholder="SOLVE FULL WORD..."
+                    maxlength="12" autocomplete="off" />
                 <button id="btn-word-solve" class="word-solve-btn">SOLVE (+50)</button>
             </div>
 
@@ -604,6 +633,7 @@
                 <p id="word-result-sub">Alice solved the word!</p>
                 <div class="modal-actions">
                     <button id="btn-word-rematch" class="btn-primary">Next Round</button>
+                    <button id="btn-word-switch" class="btn-secondary">Switch Game</button>
                     <button id="btn-word-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
@@ -616,7 +646,7 @@
             <div class="top-bar-left">
                 <button id="btn-leave-bs" class="btn-icon-only" title="Back to Games">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
                     </svg>
                 </button>
             </div>
@@ -699,6 +729,7 @@
                 <p id="bs-result-sub">All enemy ships destroyed!</p>
                 <div class="modal-actions">
                     <button id="btn-bs-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-bs-switch" class="btn-secondary">Switch Game</button>
                     <button id="btn-bs-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
@@ -708,4 +739,5 @@
     <!-- ═══════ App Entry Point (ES Module) ═══════ -->
     <script type="module" src="js/app.js"></script>
 </body>
+
 </html>

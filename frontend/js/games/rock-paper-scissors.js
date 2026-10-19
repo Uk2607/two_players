@@ -74,6 +74,7 @@ export class RockPaperScissorsGame {
         this.resultTitle = document.getElementById('rps-result-title');
         this.resultSub = document.getElementById('rps-result-sub');
         this.btnRematch = document.getElementById('btn-rps-rematch');
+        this.btnSwitch = document.getElementById('btn-rps-switch');
         this.btnBack = document.getElementById('btn-rps-back');
     }
 
@@ -82,11 +83,32 @@ export class RockPaperScissorsGame {
     }
 
     bindEvents() {
-        // Leave / Back button
-        if (this.btnLeave) {
-            this.btnLeave.addEventListener('click', () => {
+        const handleSwitchGame = () => {
+            this.clearCountdown();
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
+                socketService.emit('switch_game');
+            } else {
+                this.onBackToGames?.();
+            }
+        };
+
+        const handleLeaveToLobby = () => {
+            this.clearCountdown();
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
                 socketService.emit('leave_pair');
-            });
+            }
+        };
+
+        // Top back button switches game
+        if (this.btnLeave) {
+            this.btnLeave.addEventListener('click', handleSwitchGame);
+        }
+
+        // Modal Switch Game button
+        if (this.btnSwitch) {
+            this.btnSwitch.addEventListener('click', handleSwitchGame);
         }
 
         // Choice buttons
@@ -115,10 +137,7 @@ export class RockPaperScissorsGame {
 
         // Back to lobby from modal
         if (this.btnBack) {
-            this.btnBack.addEventListener('click', () => {
-                this.resultModal?.classList.add('hidden');
-                socketService.emit('leave_pair');
-            });
+            this.btnBack.addEventListener('click', handleLeaveToLobby);
         }
 
         // Socket listener for RPS state updates

@@ -66,6 +66,7 @@ export class WordDuelGame {
         this.resultTitle = document.getElementById('word-result-title');
         this.resultSub = document.getElementById('word-result-sub');
         this.btnRematch = document.getElementById('btn-word-rematch');
+        this.btnSwitch = document.getElementById('btn-word-switch');
         this.btnBack = document.getElementById('btn-word-back');
     }
 
@@ -74,11 +75,30 @@ export class WordDuelGame {
     }
 
     bindEvents() {
-        // Leave / Back button
-        if (this.btnLeave) {
-            this.btnLeave.addEventListener('click', () => {
+        const handleSwitchGame = () => {
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
+                socketService.emit('switch_game');
+            } else {
+                this.onBackToGames?.();
+            }
+        };
+
+        const handleLeaveToLobby = () => {
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
                 socketService.emit('leave_pair');
-            });
+            }
+        };
+
+        // Top back button switches game
+        if (this.btnLeave) {
+            this.btnLeave.addEventListener('click', handleSwitchGame);
+        }
+
+        // Modal Switch Game button
+        if (this.btnSwitch) {
+            this.btnSwitch.addEventListener('click', handleSwitchGame);
         }
 
         // Virtual Keyboard clicks

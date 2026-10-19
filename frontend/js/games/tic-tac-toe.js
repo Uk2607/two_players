@@ -38,6 +38,7 @@ export class TicTacToeGame {
         this._resultTitle = $('#ttt-result-title');
         this._resultSub = $('#ttt-result-sub');
         this._btnRematch = $('#btn-ttt-rematch');
+        this._btnSwitch = $('#btn-ttt-switch');
         this._btnBack = $('#btn-ttt-back');
 
         this._roomData = null;
@@ -49,21 +50,32 @@ export class TicTacToeGame {
     }
 
     _setupListeners() {
-        const handleLeave = () => {
+        const handleSwitchGame = () => {
             this.hideResultModal();
             if (socketService.connected) {
-                socketService.emit('leave_pair');
+                socketService.emit('switch_game');
             } else {
                 this._onBackToGames?.();
             }
         };
 
+        const handleLeaveToLobby = () => {
+            this.hideResultModal();
+            if (socketService.connected) {
+                socketService.emit('leave_pair');
+            }
+        };
+
         if (this._btnLeaveGame) {
-            this._btnLeaveGame.addEventListener('click', handleLeave);
+            this._btnLeaveGame.addEventListener('click', handleSwitchGame);
+        }
+
+        if (this._btnSwitch) {
+            this._btnSwitch.addEventListener('click', handleSwitchGame);
         }
 
         if (this._btnBack) {
-            this._btnBack.addEventListener('click', handleLeave);
+            this._btnBack.addEventListener('click', handleLeaveToLobby);
         }
 
         if (this._btnRematch) {

@@ -48,6 +48,30 @@ def register_game_events(socketio, player_service, room_service, game_services: 
             'state': p2_state,
         }, to=room.player2_sid)
 
+    @socketio.on('switch_game')
+    def handle_switch_game(data=None):
+        from flask import request
+        from flask_socketio import emit
+
+        sid = request.sid
+        room = room_service.get_room_for_player(sid)
+        if not room:
+            emit('error', {'message': 'Not in an active match'})
+            return
+
+        player = player_service.get(sid)
+        name = player.name if player else 'Partner'
+
+        # Reset active game selection
+        room.game = None
+
+        payload = {
+            'room_id': room.room_id,
+            'requested_by': name,
+        }
+        socketio.emit('game_switched', payload, to=room.player1_sid)
+        socketio.emit('game_switched', payload, to=room.player2_sid)
+
     @socketio.on('leave_pair')
     def handle_leave_pair(data=None):
         from flask import request

@@ -89,6 +89,11 @@ class RoomService:
         """Remove all rooms containing a player (disconnect cleanup)."""
         return self._room_repo.remove_by_player(sid)
 
+    def get_room_for_player(self, sid: str) -> Optional[Room]:
+        """Find active room for a given player SID."""
+        rooms = self._room_repo.find_by_player(sid)
+        return rooms[0] if rooms else None
+
     def room_count(self) -> int:
         """Return number of active rooms."""
         return self._room_repo.count()

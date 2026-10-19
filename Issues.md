@@ -1,2 +1,4 @@
-# Other player can see what his opponent has chosen in RPS game before chosing his own item. There should be somthing which says that opponent has "Not chosen yet" for both players and as soon as one player chooses his item it should say that opponent has "chosen his item" and now it is his turn to choose his item. And once both choses their item reveal each other items and hang in there for 3 seconds before next round starts
-
+# Issues
+- In memory match when you click on two different cards the second card doesn't flip, instead we gets the wrong card message first then for a split second we can see it flipped and it goes away.
+- Can we have a search box in player list section to search the player it will be like SQL 'LIKE' query.
+- Also once the players are matched can we have the option for them to switch the game instead going all the way back to the player list.

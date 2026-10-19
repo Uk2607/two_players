@@ -56,6 +56,7 @@ export class ConnectFourGame {
         this.resultTitle = document.getElementById('c4-result-title');
         this.resultSub = document.getElementById('c4-result-sub');
         this.btnRematch = document.getElementById('btn-c4-rematch');
+        this.btnSwitch = document.getElementById('btn-c4-switch');
         this.btnBack = document.getElementById('btn-c4-back');
     }
 
@@ -64,11 +65,30 @@ export class ConnectFourGame {
     }
 
     bindEvents() {
-        // Leave / Back button
-        if (this.btnLeave) {
-            this.btnLeave.addEventListener('click', () => {
+        const handleSwitchGame = () => {
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
+                socketService.emit('switch_game');
+            } else {
+                this.onBackToGames?.();
+            }
+        };
+
+        const handleLeaveToLobby = () => {
+            this.resultModal?.classList.add('hidden');
+            if (socketService.connected) {
                 socketService.emit('leave_pair');
-            });
+            }
+        };
+
+        // Top back button switches game
+        if (this.btnLeave) {
+            this.btnLeave.addEventListener('click', handleSwitchGame);
+        }
+
+        // Modal Switch Game button
+        if (this.btnSwitch) {
+            this.btnSwitch.addEventListener('click', handleSwitchGame);
         }
 
         // Drop buttons in header row
@@ -103,10 +123,7 @@ export class ConnectFourGame {
 
         // Back to lobby from modal
         if (this.btnBack) {
-            this.btnBack.addEventListener('click', () => {
-                this.resultModal?.classList.add('hidden');
-                socketService.emit('leave_pair');
-            });
+            this.btnBack.addEventListener('click', handleLeaveToLobby);
         }
 
         // Socket listener
