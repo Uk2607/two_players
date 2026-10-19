@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="css/screens/connect-four.css">
     <link rel="stylesheet" href="css/screens/memory-match.css">
     <link rel="stylesheet" href="css/screens/word-duel.css">
+    <link rel="stylesheet" href="css/screens/battleship.css">
 </head>
 <body>
     <!-- ═══════ Animated Background ═══════ -->
@@ -604,6 +605,101 @@
                 <div class="modal-actions">
                     <button id="btn-word-rematch" class="btn-primary">Next Round</button>
                     <button id="btn-word-back" class="btn-secondary">Leave to Lobby</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ SCREEN 9: Game Arena (Battleship) ═══════ -->
+    <section id="screen-battleship-arena" class="screen">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="btn-leave-bs" class="btn-icon-only" title="Back to Games">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="top-bar-center">
+                <h2 id="bs-game-title">Battleship</h2>
+            </div>
+            <div class="top-bar-right">
+                <div class="pair-info">
+                    <span class="pair-badge" id="bs-pair-badge">You & Friend</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="arena-content battleship-content">
+            <!-- Scoreboard -->
+            <div class="bs-scoreboard">
+                <div class="bs-score-card player-p1-card" id="bs-card-p1">
+                    <div class="avatar bs-avatar" id="bs-avatar-p1">1</div>
+                    <div class="bs-player-details">
+                        <span class="bs-player-name" id="bs-name-p1">Player 1</span>
+                        <span class="bs-fleet-status-pill">Fleet Ready</span>
+                    </div>
+                    <div class="bs-score" id="bs-score-p1">0</div>
+                </div>
+
+                <div class="bs-tracker">
+                    <span class="bs-phase-badge" id="bs-phase-badge">Deployment</span>
+                    <span class="bs-hits-counter" id="bs-hits-counter">Hits: 0 / 7</span>
+                </div>
+
+                <div class="bs-score-card player-p2-card" id="bs-card-p2">
+                    <div class="bs-score" id="bs-score-p2">0</div>
+                    <div class="bs-player-details">
+                        <span class="bs-player-name" id="bs-name-p2">Player 2</span>
+                        <span class="bs-fleet-status-pill">Fleet Ready</span>
+                    </div>
+                    <div class="avatar bs-avatar" id="bs-avatar-p2">2</div>
+                </div>
+            </div>
+
+            <!-- Turn Banner -->
+            <div class="bs-turn-banner" id="bs-turn-banner">
+                <span class="bs-turn-dot" id="bs-turn-dot"></span>
+                <span id="bs-turn-text">Deploy your warships, Commander!</span>
+            </div>
+
+            <!-- Deployment Phase Actions -->
+            <div class="bs-deployment-panel" id="bs-deployment-panel">
+                <div class="bs-deployment-actions">
+                    <button id="btn-bs-auto-deploy" class="btn-secondary">⚡ Randomize</button>
+                    <button id="btn-bs-lock-fleet" class="btn-primary">Lock Fleet ⚓</button>
+                </div>
+            </div>
+
+            <!-- Dual Radar Grids Theatre -->
+            <div class="bs-theatre-stage">
+                <!-- Target Radar Grid -->
+                <div class="bs-grid-section">
+                    <span class="bs-grid-title">🎯 Enemy Waters (Target Radar)</span>
+                    <div class="bs-grid-container targetable" id="bs-enemy-radar-grid">
+                        <!-- 6x6 cells injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Friendly Waters Mini Grid -->
+                <div class="bs-grid-section">
+                    <span class="bs-grid-title">🛡️ My Fleet (Defense)</span>
+                    <div class="bs-grid-container mini" id="bs-friendly-fleet-grid">
+                        <!-- 6x6 cells injected by JS -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Round Result Modal -->
+        <div id="bs-result-modal" class="modal-overlay hidden">
+            <div class="modal glass-card">
+                <div class="modal-icon" id="bs-result-icon">🏆</div>
+                <h3 id="bs-result-title">Naval Victory!</h3>
+                <p id="bs-result-sub">All enemy ships destroyed!</p>
+                <div class="modal-actions">
+                    <button id="btn-bs-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-bs-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
         </div>

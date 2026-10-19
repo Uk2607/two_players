@@ -16,6 +16,7 @@ import { RockPaperScissorsGame } from './games/rock-paper-scissors.js';
 import { ConnectFourGame } from './games/connect-four.js';
 import { MemoryMatchGame } from './games/memory-match.js';
 import { WordDuelGame } from './games/word-duel.js';
+import { BattleshipGame } from './games/battleship.js';
 
 class App {
     constructor() {
@@ -37,6 +38,7 @@ class App {
         screenManager.register('c4-arena', '#screen-c4-arena');
         screenManager.register('memory-arena', '#screen-memory-arena');
         screenManager.register('word-arena', '#screen-word-arena');
+        screenManager.register('battleship-arena', '#screen-battleship-arena');
 
         // Initialize screens
         this.registerScreen = new RegisterScreen({
@@ -73,6 +75,10 @@ class App {
             onBackToGames: () => this.handleBackToGames(),
         });
 
+        this.battleshipGame = new BattleshipGame({
+            onBackToGames: () => this.handleBackToGames(),
+        });
+
         // Setup global server socket listeners
         this.setupGlobalSocketHandlers();
 
@@ -90,7 +96,7 @@ class App {
         // Setup browser history back button handling
         window.addEventListener('popstate', (e) => {
             const screen = e.state?.screen || 'register';
-            if (screenManager.current === 'game-arena' || screenManager.current === 'rps-arena' || screenManager.current === 'c4-arena' || screenManager.current === 'memory-arena' || screenManager.current === 'word-arena' || screenManager.current === 'games') {
+            if (screenManager.current === 'game-arena' || screenManager.current === 'rps-arena' || screenManager.current === 'c4-arena' || screenManager.current === 'memory-arena' || screenManager.current === 'word-arena' || screenManager.current === 'battleship-arena' || screenManager.current === 'games') {
                 this.handleLeaveGameRoom();
             } else if (screenManager.current === 'lobby' && screen === 'register') {
                 this.handleLogoutLobby();
@@ -224,6 +230,10 @@ class App {
             this.wordGame.start(roomData, this.localPlayer, state);
             screenManager.show('word-arena');
             window.history.pushState({ screen: 'word-arena' }, '', '#word-arena');
+        } else if (gameId === 'battleship') {
+            this.battleshipGame.start(roomData, this.localPlayer, state);
+            screenManager.show('battleship-arena');
+            window.history.pushState({ screen: 'battleship-arena' }, '', '#battleship-arena');
         } else {
             toastService.info(`${gameId} arena coming next!`);
         }
@@ -252,6 +262,7 @@ class App {
         this.c4Game.reset();
         this.memoryGame.reset();
         this.wordGame.reset();
+        this.battleshipGame.reset();
         this.gamesScreen.clearRoom();
         this.registerScreen.reset();
         screenManager.show('register');
@@ -272,6 +283,7 @@ class App {
         this.c4Game.reset();
         this.memoryGame.reset();
         this.wordGame.reset();
+        this.battleshipGame.reset();
 
         // 2. Clear current room on games screen and app state
         this.currentRoom = null;

@@ -36,11 +36,16 @@ two_players/
 │   │   ├── player_repository.py
 │   │   ├── invite_repository.py
 │   │   └── room_repository.py
-│   ├── services/                    # Service layer (Business logic)
+│   ├── services/                    # Service layer (Modular game business logic)
 │   │   ├── player_service.py
 │   │   ├── invite_service.py
 │   │   ├── room_service.py
-│   │   └── tic_tac_toe_service.py   # Tic Tac Toe game logic & score tracking
+│   │   ├── tic_tac_toe_service.py   # Tic Tac Toe: turn alternation & 3-in-a-row checks
+│   │   ├── rock_paper_scissors_service.py # Rock Paper Scissors: blind commits & showdowns
+│   │   ├── connect_four_service.py  # Connect Four: 7-col gravity physics & 4-in-a-row
+│   │   ├── memory_match_service.py  # Memory Match: card shuffling & pair bonus streak
+│   │   ├── word_duel_service.py     # Word Duel: secret dictionary & strike penalties
+│   │   └── battleship_service.py    # Battleship: fleet grids, fog-of-war & radar torpedoes
 │   ├── routers/                     # REST API routers (/health, /stats)
 │   │   └── health_router.py
 │   └── events/                      # Real-time WebSocket events (Socket.IO)
@@ -48,28 +53,38 @@ two_players/
 │       ├── player_events.py
 │       ├── invite_events.py
 │       ├── game_events.py
-│       └── tic_tac_toe_events.py    # Move execution & rematch handlers
+│       ├── tic_tac_toe_events.py
+│       ├── rock_paper_scissors_events.py
+│       ├── connect_four_events.py
+│       ├── memory_match_events.py
+│       ├── word_duel_events.py
+│       └── battleship_events.py
 │
 └── frontend/                        # Frontend Web App
-    ├── index.html                   # SPA HTML shell
+    ├── index.html                   # SPA HTML shell with all 6 game arena theatres
     ├── css/                         # Design system & modular CSS
     │   ├── base.css                 # Color tokens, typography, glassmorphism
     │   ├── animations.css           # Background orbs, pulses, transitions
     │   ├── components.css           # Cards, buttons, modals, toasts
     │   └── screens/
-    │       ├── register.css         # Arena nickname entry screen
+    │       ├── register.css         # Nickname entry screen
     │       ├── lobby.css            # Online player list & challenge cards
     │       ├── games.css            # Game card grid & pair badge
-    │       └── tic-tac-toe.css      # 3x3 board, neon glows, scoreboard
+    │       ├── tic-tac-toe.css      # 3x3 board, neon glows, scoreboard
+    │       ├── rock-paper-scissors.css # Choice dials, lock-in status, showdown stage
+    │       ├── connect-four.css     # 7x6 gravity grid, floating discs, column hovers
+    │       ├── memory-match.css     # 4x4 3D flip card grid, pair celebration glow
+    │       ├── word-duel.css        # Secret word blanks, strike hearts, QWERTY keyboard
+    │       └── battleship.css       # Dual radar grids, ship docks, fog-of-war markers
     └── js/                          # Modular ES6 JavaScript
         ├── config.js                # Server URL & connection config
-        ├── app.js                   # Application entry point
+        ├── app.js                   # Application orchestrator & router
         ├── libs/
         │   └── socket.io.min.js     # Vendored client library for offline LAN use
         ├── utils/
         │   └── helpers.js           # Avatar colors, sanitization, DOM helpers
         ├── data/
-        │   └── games-catalog.js     # Games catalog definitions
+        │   └── games-catalog.js     # Catalog definitions for all 6 multiplayer games
         ├── services/                # Frontend services
         │   ├── socket-service.js    # Socket.IO connection & event bus
         │   ├── screen-manager.js    # Single-page screen router
@@ -78,8 +93,13 @@ two_players/
         │   ├── player-card.js       # Player item in lobby
         │   ├── game-card.js         # Game card renderer
         │   └── invite-modal.js      # Challenge dialog modal
-        ├── games/                   # Modular Game Clients
-        │   └── tic-tac-toe.js       # Interactive 3x3 arena & turn manager
+        ├── games/                   # Modular Game Controllers
+        │   ├── tic-tac-toe.js       # Interactive 3x3 arena & turn manager
+        │   ├── rock-paper-scissors.js # Blind commit dial, reveal animation, best-of-5
+        │   ├── connect-four.js      # Column drop mechanics, gravity drop animations
+        │   ├── memory-match.js      # Card flip duel, matched pair tracking
+        │   ├── word-duel.js         # Virtual keyboard, strike counter, word reveal
+        │   └── battleship.js        # Auto-fleet deployment, radar torpedo targeting
         └── screens/                 # Screen controllers
             ├── register-screen.js   # Nickname screen logic
             ├── lobby-screen.js      # Lobby & challenge invitations
