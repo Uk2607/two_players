@@ -139,3 +139,17 @@ python3 -m http.server 3000 --bind 0.0.0.0
 5. On either device's screen, click **Challenge** next to the other player.
 6. The other player clicks **Accept** on the challenge modal.
 7. Both players are paired and can select any of the available game cards!
+
+---
+
+## 📚 Architecture & Design Documentation
+
+Comprehensive technical specifications and interactive diagrams are available in the [`docs/`](file:///Users/uk07/Desktop/Projects/two_players/docs) directory:
+
+- **[System Architecture Markdown (`docs/architecture.md`)](file:///Users/uk07/Desktop/Projects/two_players/docs/architecture.md)**: Detailed specifications with Mermaid diagrams covering:
+  - System topology & layer boundaries (Models, Repositories, Services, Events, Routers)
+  - Pluggable multi-game scaling architecture (`BaseGameService`, dynamic state isolation)
+  - Lifecycle & edge-case resilience (instant tab-close unregister beacon vs. voluntary lobby return)
+  - Zero-configuration / "No-IP" deployment blueprint (mDNS `.local` domains, terminal QR codes, Cloudflare tunnels)
+  - Full Socket.IO event contract matrix
+- **[Interactive HTML Architecture Viewer (`docs/architecture.html`)](file:///Users/uk07/Desktop/Projects/two_players/docs/architecture.html)**: Interactive, glassmorphism-styled dashboard with auto-rendered Mermaid.js diagrams, sidebar navigation, code snippets, and interactive sequence flows.
