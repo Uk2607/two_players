@@ -1,11 +1,12 @@
-"""
-Two Players — Application Entry Point
+import sys
+from pathlib import Path
 
-Wires together all layers:
-  Config → Repositories → Services → Events/Routers → Server
-"""
+# Ensure backend directory is in sys.path when running from repository root
+backend_dir = Path(__file__).resolve().parent
+if str(backend_dir) not in sys.path:
+    sys.path.insert(0, str(backend_dir))
 
-from flask import Flask
+from flask import Flask, send_from_directory
 from flask_socketio import SocketIO
 from flask_cors import CORS
 
@@ -29,8 +30,16 @@ from routers import create_health_router, create_player_router
 def create_app() -> tuple[Flask, SocketIO]:
     """Application factory — builds and wires the entire app."""
 
+    # ── Frontend static assets directory (for monolith deployment) ──
+    frontend_dir = (backend_dir.parent / 'frontend').resolve()
+    has_frontend = frontend_dir.is_dir()
+
     # ── Flask app ────────────────────────────────────────────
-    app = Flask(__name__)
+    app = Flask(
+        __name__,
+        static_folder=str(frontend_dir) if has_frontend else None,
+        static_url_path='',
+    )
     app.config['SECRET_KEY'] = Config.SECRET_KEY
     CORS(app, origins=Config.get_cors_origins())
 
@@ -76,6 +85,20 @@ def create_app() -> tuple[Flask, SocketIO]:
 
     # ── Socket.IO Events ─────────────────────────────────────
     register_all_events(socketio, player_service, invite_service, room_service, game_services)
+
+    # ── Serve Frontend SPA & Static Assets (Single-Service Monolith) ──
+    if has_frontend:
+        @app.route('/')
+        def serve_index():
+            return send_from_directory(str(frontend_dir), 'index.html')
+
+        @app.route('/<path:filename>')
+        def serve_static(filename):
+            file_path = frontend_dir / filename
+            if file_path.is_file():
+                return send_from_directory(str(frontend_dir), filename)
+            # Fallback for SPA routing if path is not a file
+            return send_from_directory(str(frontend_dir), 'index.html')
 
     return app, socketio
 

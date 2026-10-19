@@ -10,16 +10,12 @@ def create_health_router(player_service, room_service):
     """Factory that creates the health blueprint with injected services."""
     health_bp = Blueprint('health', __name__)
 
-    @health_bp.route('/')
-    def index():
+    @health_bp.route('/health')
+    def health():
         return jsonify({
-            'status': 'running',
+            'status': 'ok',
             'players_online': player_service.player_count(),
             'active_rooms': room_service.room_count(),
         })
-
-    @health_bp.route('/health')
-    def health():
-        return jsonify({'status': 'ok'})
 
     return health_bp
