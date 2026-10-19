@@ -11,7 +11,7 @@ from flask_cors import CORS
 
 from config import Config
 from repositories import PlayerRepository, InviteRepository, RoomRepository
-from services import PlayerService, InviteService, RoomService
+from services import PlayerService, InviteService, RoomService, TicTacToeService
 from events import register_all_events
 from routers import create_health_router
 
@@ -39,13 +39,14 @@ def create_app() -> tuple[Flask, SocketIO]:
     player_service = PlayerService(player_repo)
     invite_service = InviteService(invite_repo, player_repo)
     room_service = RoomService(room_repo, player_repo)
+    ttt_service = TicTacToeService()
 
     # ── REST Routers ─────────────────────────────────────────
     health_bp = create_health_router(player_service, room_service)
     app.register_blueprint(health_bp)
 
     # ── Socket.IO Events ─────────────────────────────────────
-    register_all_events(socketio, player_service, invite_service, room_service)
+    register_all_events(socketio, player_service, invite_service, room_service, ttt_service)
 
     return app, socketio
 

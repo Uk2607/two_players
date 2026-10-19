@@ -12,9 +12,11 @@ export class GamesScreen {
     /**
      * @param {object} options
      * @param {Function} options.onLeave - Callback when leaving the paired room
+     * @param {Function} options.onLaunchGame - Callback(gameId, roomData, state) when game is launched
      */
-    constructor({ onLeave }) {
+    constructor({ onLeave, onLaunchGame }) {
         this._onLeave = onLeave;
+        this._onLaunchGame = onLaunchGame;
 
         this._pairBadge = $('#pair-badge');
         this._btnLeavePair = $('#btn-leave-pair');
@@ -43,7 +45,7 @@ export class GamesScreen {
         socketService.on('game_selected', (data) => {
             const game = GAMES.find(g => g.id === data.game_id);
             const gameTitle = game ? game.title : data.game_id;
-            toastService.success(`🎮 ${data.selected_by} selected ${gameTitle}! Launching soon...`);
+            toastService.success(`🎮 ${data.selected_by} selected ${gameTitle}!`);
 
             // Highlight selected game card
             if (this._gamesGrid) {
@@ -51,6 +53,11 @@ export class GamesScreen {
                     card.classList.toggle('selected', card.getAttribute('data-id') === data.game_id);
                 });
             }
+
+            // Launch game arena after a brief visual transition
+            setTimeout(() => {
+                this._onLaunchGame?.(data.game_id, this._roomData, data.state);
+            }, 600);
         });
 
         socketService.on('left_pair', () => {

@@ -1,6 +1,6 @@
 /**
  * Two Players — Main Application Entry Point
- * Orchestrates screens, services, and real-time multiplayer state.
+ * Orchestrates screens, services, games, and real-time multiplayer state.
  */
 
 import { socketService } from './services/socket-service.js';
@@ -10,6 +10,7 @@ import { toastService } from './services/toast-service.js';
 import { RegisterScreen } from './screens/register-screen.js';
 import { LobbyScreen } from './screens/lobby-screen.js';
 import { GamesScreen } from './screens/games-screen.js';
+import { TicTacToeGame } from './games/tic-tac-toe.js';
 
 class App {
     constructor() {
@@ -26,6 +27,7 @@ class App {
         screenManager.register('register', '#screen-register');
         screenManager.register('lobby', '#screen-lobby');
         screenManager.register('games', '#screen-games');
+        screenManager.register('game-arena', '#screen-game-arena');
 
         // Initialize screens
         this.registerScreen = new RegisterScreen({
@@ -38,6 +40,12 @@ class App {
 
         this.gamesScreen = new GamesScreen({
             onLeave: () => this.handleLeaveGameRoom(),
+            onLaunchGame: (gameId, roomData, state) => this.handleLaunchGame(gameId, roomData, state),
+        });
+
+        // Initialize games
+        this.ticTacToeGame = new TicTacToeGame({
+            onBackToGames: () => this.handleBackToGames(),
         });
 
         // Setup global server socket listeners
@@ -86,6 +94,19 @@ class App {
     handlePaired(roomData) {
         this.currentRoom = roomData;
         this.gamesScreen.setRoom(roomData, this.localPlayer);
+        screenManager.show('games');
+    }
+
+    handleLaunchGame(gameId, roomData, state) {
+        if (gameId === 'tic-tac-toe') {
+            this.ticTacToeGame.start(roomData, this.localPlayer, state);
+            screenManager.show('game-arena');
+        } else {
+            toastService.info(`${gameId} arena coming next!`);
+        }
+    }
+
+    handleBackToGames() {
         screenManager.show('games');
     }
 

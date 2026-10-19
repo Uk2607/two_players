@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="css/screens/register.css">
     <link rel="stylesheet" href="css/screens/lobby.css">
     <link rel="stylesheet" href="css/screens/games.css">
+    <link rel="stylesheet" href="css/screens/tic-tac-toe.css">
 </head>
 <body>
     <!-- ═══════ Animated Background ═══════ -->
@@ -153,6 +154,89 @@
                 <!-- Game cards injected by JS -->
             </div>
         </main>
+    </section>
+
+    <!-- ═══════ SCREEN 4: Game Arena (Tic Tac Toe) ═══════ -->
+    <section id="screen-game-arena" class="screen">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="btn-leave-game" class="btn-icon-only" title="Back to Games">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="top-bar-center">
+                <h2 id="arena-game-title">Tic Tac Toe</h2>
+            </div>
+            <div class="top-bar-right">
+                <div class="pair-info">
+                    <span class="pair-badge" id="arena-pair-badge">You & Friend</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="arena-content">
+            <!-- Scoreboard -->
+            <div class="ttt-scoreboard">
+                <div class="ttt-score-card player-x-card" id="card-player-x">
+                    <div class="avatar ttt-avatar" id="ttt-avatar-x">X</div>
+                    <div class="ttt-player-details">
+                        <span class="ttt-player-name" id="ttt-name-x">Player 1</span>
+                        <span class="ttt-symbol-badge badge-x">✕</span>
+                    </div>
+                    <div class="ttt-score" id="ttt-score-x">0</div>
+                </div>
+
+                <div class="ttt-vs-card">
+                    <span class="ttt-ties-label">DRAWS</span>
+                    <span class="ttt-ties-score" id="ttt-score-ties">0</span>
+                </div>
+
+                <div class="ttt-score-card player-o-card" id="card-player-o">
+                    <div class="ttt-score" id="ttt-score-o">0</div>
+                    <div class="ttt-player-details">
+                        <span class="ttt-player-name" id="ttt-name-o">Player 2</span>
+                        <span class="ttt-symbol-badge badge-o">○</span>
+                    </div>
+                    <div class="avatar ttt-avatar" id="ttt-avatar-o">O</div>
+                </div>
+            </div>
+
+            <!-- Turn Banner -->
+            <div class="ttt-turn-banner" id="ttt-turn-banner">
+                <span class="turn-dot"></span>
+                <span id="ttt-turn-text">Waiting for game start...</span>
+            </div>
+
+            <!-- 3x3 Grid Board -->
+            <div class="ttt-board-wrapper">
+                <div class="ttt-board" id="ttt-board">
+                    <button class="ttt-cell" data-index="0" aria-label="Cell 0"></button>
+                    <button class="ttt-cell" data-index="1" aria-label="Cell 1"></button>
+                    <button class="ttt-cell" data-index="2" aria-label="Cell 2"></button>
+                    <button class="ttt-cell" data-index="3" aria-label="Cell 3"></button>
+                    <button class="ttt-cell" data-index="4" aria-label="Cell 4"></button>
+                    <button class="ttt-cell" data-index="5" aria-label="Cell 5"></button>
+                    <button class="ttt-cell" data-index="6" aria-label="Cell 6"></button>
+                    <button class="ttt-cell" data-index="7" aria-label="Cell 7"></button>
+                    <button class="ttt-cell" data-index="8" aria-label="Cell 8"></button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Round Result Modal -->
+        <div id="ttt-result-modal" class="modal-overlay hidden">
+            <div class="modal glass-card">
+                <div class="modal-icon" id="ttt-result-icon">🏆</div>
+                <h3 id="ttt-result-title">Victory!</h3>
+                <p id="ttt-result-sub">Alice won the round</p>
+                <div class="modal-actions">
+                    <button id="btn-ttt-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-ttt-back" class="btn-secondary">Change Game</button>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- ═══════ App Entry Point (ES Module) ═══════ -->

@@ -4,7 +4,7 @@ Handles game selection and pair management via Socket.IO.
 """
 
 
-def register_game_events(socketio, player_service, room_service):
+def register_game_events(socketio, player_service, room_service, ttt_service):
     """Register game-related event handlers."""
 
     def broadcast_players():
@@ -26,13 +26,18 @@ def register_game_events(socketio, player_service, room_service):
             emit('error', {'message': selector_name})  # selector_name is error msg on failure
             return
 
+        initial_state = {}
+        if game_id == 'tic-tac-toe':
+            initial_state = ttt_service.init_game(room)
+
         payload = {
             'game_id': game_id,
             'room_id': room_id,
             'selected_by': selector_name,
+            'state': initial_state,
         }
-        socketio.emit('game_selected', payload, to=room.player1.sid)
-        socketio.emit('game_selected', payload, to=room.player2.sid)
+        socketio.emit('game_selected', payload, to=room.player1_sid)
+        socketio.emit('game_selected', payload, to=room.player2_sid)
 
     @socketio.on('leave_pair')
     def handle_leave_pair(data):
@@ -45,9 +50,6 @@ def register_game_events(socketio, player_service, room_service):
             return
 
         partner_sid = room_service.leave_pair(sid)
-
-        # Leave Socket.IO rooms
-        # (rooms are auto-cleaned by room_service, but we leave the socketio room too)
 
         if partner_sid:
             partner = player_service.get(partner_sid)

@@ -22,13 +22,15 @@ class InviteModal {
         if (!this._btnAccept || !this._btnDecline) return;
 
         this._btnAccept.addEventListener('click', () => {
+            const callback = this._onAccept;
             this.hide();
-            this._onAccept?.();
+            callback?.();
         });
 
         this._btnDecline.addEventListener('click', () => {
+            const callback = this._onDecline;
             this.hide();
-            this._onDecline?.();
+            callback?.();
         });
     }
 

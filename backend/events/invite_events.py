@@ -36,22 +36,26 @@ def register_invite_events(socketio, player_service, invite_service, room_servic
     @socketio.on('accept_invite')
     def handle_accept_invite(data):
         from flask import request
-        from flask_socketio import emit, join_room
+        from flask_socketio import emit
 
         from_sid = data.get('from_id')
+        print(f"[Invite] accept_invite received from {request.sid} for sender {from_sid}")
         success, message, invite = invite_service.accept_invite(request.sid, from_sid)
 
         if not success:
+            print(f"[Invite] accept_invite failed: {message}")
             emit('error', {'message': message})
             return
 
         # Create a room and pair the players
         room = room_service.create_room(from_sid, request.sid)
         if not room:
+            print("[Invite] failed to create room")
             emit('error', {'message': 'Failed to create room'})
             return
 
         pair_data = room.to_dict()
+        print(f"[Invite] Paired room created: {room.room_id}! Emitting paired to {from_sid} and {request.sid}")
         socketio.emit('paired', pair_data, to=from_sid)
         socketio.emit('paired', pair_data, to=request.sid)
         broadcast_players()
