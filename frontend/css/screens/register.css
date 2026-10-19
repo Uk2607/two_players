@@ -1,0 +1,57 @@
+/* ══════════════════════════════════════════════════════════
+   Screen: Registration
+   ══════════════════════════════════════════════════════════ */
+
+.register-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+    gap: 2rem;
+}
+
+.logo-section {
+    text-align: center;
+    animation: fadeInUp 0.8s ease;
+}
+
+.logo-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.2rem;
+    color: var(--accent-primary);
+}
+
+.logo-title {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+}
+
+.logo-subtitle {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+    font-weight: 400;
+}
+
+.register-card {
+    width: 100%;
+    max-width: 420px;
+    padding: 2rem;
+    animation: fadeInUp 0.8s ease 0.2s both;
+}
+
+#screen-register .connection-status {
+    animation: fadeInUp 0.8s ease 0.4s both;
+}
+
+@media (max-width: 640px) {
+    .logo-title { font-size: 2.2rem; }
+}

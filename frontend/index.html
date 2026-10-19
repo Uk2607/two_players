@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two Players | Local Multiplayer Games</title>
+    <meta name="description" content="Play multiplayer games with friends on the same WiFi network. Challenge your friends in real-time!">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Socket.IO client (local vendored library for offline/LAN multiplayer) -->
+    <script src="js/libs/socket.io.min.js"></script>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/base.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/screens/register.css">
+    <link rel="stylesheet" href="css/screens/lobby.css">
+    <link rel="stylesheet" href="css/screens/games.css">
+</head>
+<body>
+    <!-- ═══════ Animated Background ═══════ -->
+    <div class="bg-animation">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+        <div class="orb orb-3"></div>
+        <div class="grid-overlay"></div>
+    </div>
+
+    <!-- ═══════ Toast Container ═══════ -->
+    <div id="toast-container"></div>
+
+    <!-- ═══════ SCREEN 1: Registration ═══════ -->
+    <section id="screen-register" class="screen active">
+        <div class="register-container">
+            <div class="logo-section">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 64 64" fill="none">
+                        <circle cx="20" cy="32" r="12" stroke="currentColor" stroke-width="3" opacity="0.8"/>
+                        <circle cx="44" cy="32" r="12" stroke="currentColor" stroke-width="3"/>
+                        <path d="M28 26 L36 38" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+                        <path d="M28 38 L36 26" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+                    </svg>
+                </div>
+                <h1 class="logo-title">Two Players</h1>
+                <p class="logo-subtitle">Play together on the same network</p>
+            </div>
+
+            <div class="register-card glass-card">
+                <div class="input-group">
+                    <label for="player-name">Choose your name</label>
+                    <input
+                        type="text"
+                        id="player-name"
+                        placeholder="Enter your name..."
+                        maxlength="16"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <div class="input-accent"></div>
+                </div>
+                <button id="btn-join" class="btn-primary" disabled>
+                    <span class="btn-text">Enter Arena</span>
+                    <span class="btn-icon">→</span>
+                </button>
+                <p class="hint-text">Others on the same WiFi can join too!</p>
+            </div>
+
+            <div class="connection-status" id="connection-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Connecting to server...</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ SCREEN 2: Lobby (Who to play with) ═══════ -->
+    <section id="screen-lobby" class="screen">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <div class="user-badge">
+                    <div class="avatar" id="my-avatar">?</div>
+                    <span class="user-name" id="my-name">Player</span>
+                </div>
+            </div>
+            <div class="top-bar-center">
+                <h2>Players Online</h2>
+            </div>
+            <div class="top-bar-right">
+                <div class="online-count">
+                    <span class="pulse-dot"></span>
+                    <span id="online-count">0</span> online
+                </div>
+            </div>
+        </header>
+
+        <main class="lobby-content">
+            <div id="player-list-empty" class="empty-state">
+                <div class="empty-icon">
+                    <svg viewBox="0 0 80 80" fill="none">
+                        <circle cx="40" cy="30" r="14" stroke="currentColor" stroke-width="2.5"/>
+                        <path d="M18 65 C18 50 62 50 62 65" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                        <circle cx="58" cy="22" r="6" stroke="currentColor" stroke-width="2" opacity="0.5"/>
+                        <path d="M64 22 L72 22 M68 18 L68 26" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                    </svg>
+                </div>
+                <h3>Waiting for players...</h3>
+                <p>Share your WiFi network and ask a friend to join!</p>
+            </div>
+
+            <div id="player-list" class="player-list"></div>
+        </main>
+
+        <!-- Invite Modal -->
+        <div id="invite-modal" class="modal-overlay hidden">
+            <div class="modal glass-card">
+                <div class="modal-icon invite-icon">⚔️</div>
+                <h3 id="invite-modal-title">Challenge Incoming!</h3>
+                <p id="invite-modal-text">Player wants to play with you</p>
+                <div class="modal-actions">
+                    <button id="btn-accept-invite" class="btn-primary">Accept</button>
+                    <button id="btn-decline-invite" class="btn-secondary">Decline</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ SCREEN 3: Game Selection (Cards) ═══════ -->
+    <section id="screen-games" class="screen">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="btn-leave-pair" class="btn-icon-only" title="Leave">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="top-bar-center">
+                <h2>Choose a Game</h2>
+            </div>
+            <div class="top-bar-right">
+                <div class="pair-info">
+                    <span class="pair-badge" id="pair-badge">You & Friend</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="games-content">
+            <div class="games-grid" id="games-grid">
+                <!-- Game cards injected by JS -->
+            </div>
+        </main>
+    </section>
+
+    <!-- ═══════ App Entry Point (ES Module) ═══════ -->
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

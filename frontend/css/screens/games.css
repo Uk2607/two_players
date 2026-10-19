@@ -1,0 +1,126 @@
+/* ══════════════════════════════════════════════════════════
+   Screen: Game Selection Cards
+   ══════════════════════════════════════════════════════════ */
+
+.games-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem 1.5rem;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.25rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* ─── Game Card ─────────────────────────────────────────── */
+.game-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    padding: 1.8rem 1.5rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    overflow: hidden;
+    animation: cardAppear 0.5s ease both;
+}
+
+.game-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    opacity: 0;
+    transition: opacity var(--transition-smooth);
+    z-index: 0;
+}
+
+.game-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--border-glow);
+    box-shadow: var(--shadow-glow);
+}
+
+.game-card:hover::before { opacity: 1; }
+.game-card:active { transform: translateY(-2px); }
+
+.game-card-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 1.2rem;
+    position: relative;
+    z-index: 1;
+}
+
+.game-card-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    position: relative;
+    z-index: 1;
+}
+
+.game-card-desc {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    position: relative;
+    z-index: 1;
+}
+
+.game-card-tag {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 0.25rem 0.7rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
+}
+
+/* ─── Card Color Variants ───────────────────────────────── */
+.game-card[data-color="purple"] .game-card-icon { background: rgba(108, 92, 231, 0.15); color: var(--accent-primary); }
+.game-card[data-color="purple"]::before { background: linear-gradient(135deg, rgba(108, 92, 231, 0.06), transparent); }
+.game-card[data-color="purple"] .game-card-tag { background: rgba(108, 92, 231, 0.12); color: var(--accent-secondary); }
+
+.game-card[data-color="cyan"] .game-card-icon { background: rgba(0, 206, 201, 0.15); color: var(--accent-cyan); }
+.game-card[data-color="cyan"]::before { background: linear-gradient(135deg, rgba(0, 206, 201, 0.06), transparent); }
+.game-card[data-color="cyan"] .game-card-tag { background: rgba(0, 206, 201, 0.12); color: var(--accent-cyan); }
+
+.game-card[data-color="pink"] .game-card-icon { background: rgba(253, 121, 168, 0.15); color: var(--accent-pink); }
+.game-card[data-color="pink"]::before { background: linear-gradient(135deg, rgba(253, 121, 168, 0.06), transparent); }
+.game-card[data-color="pink"] .game-card-tag { background: rgba(253, 121, 168, 0.12); color: var(--accent-pink); }
+
+.game-card[data-color="orange"] .game-card-icon { background: rgba(243, 156, 18, 0.15); color: var(--accent-orange); }
+.game-card[data-color="orange"]::before { background: linear-gradient(135deg, rgba(243, 156, 18, 0.06), transparent); }
+.game-card[data-color="orange"] .game-card-tag { background: rgba(243, 156, 18, 0.12); color: var(--accent-orange); }
+
+.game-card[data-color="green"] .game-card-icon { background: rgba(0, 184, 148, 0.15); color: var(--accent-green); }
+.game-card[data-color="green"]::before { background: linear-gradient(135deg, rgba(0, 184, 148, 0.06), transparent); }
+.game-card[data-color="green"] .game-card-tag { background: rgba(0, 184, 148, 0.12); color: var(--accent-green); }
+
+.game-card[data-color="red"] .game-card-icon { background: rgba(231, 76, 60, 0.15); color: var(--accent-red); }
+.game-card[data-color="red"]::before { background: linear-gradient(135deg, rgba(231, 76, 60, 0.06), transparent); }
+.game-card[data-color="red"] .game-card-tag { background: rgba(231, 76, 60, 0.12); color: var(--accent-red); }
+
+/* ─── Responsive ────────────────────────────────────────── */
+@media (max-width: 640px) {
+    .games-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    .game-card { padding: 1.4rem 1.2rem; }
+}
