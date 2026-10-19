@@ -9,6 +9,7 @@ from events.game_events import register_game_events
 from events.tic_tac_toe_events import register_tic_tac_toe_events
 from events.rock_paper_scissors_events import register_rock_paper_scissors_events
 from events.connect_four_events import register_connect_four_events
+from events.memory_match_events import register_memory_match_events
 
 
 def register_all_events(socketio, player_service, invite_service, room_service, game_services: dict):
@@ -25,3 +26,5 @@ def register_all_events(socketio, player_service, invite_service, room_service, 
         register_rock_paper_scissors_events(socketio, room_service, game_services['rock-paper-scissors'])
     if 'connect-four' in game_services:
         register_connect_four_events(socketio, room_service, game_services['connect-four'])
+    if 'memory-match' in game_services:
+        register_memory_match_events(socketio, room_service, game_services['memory-match'])

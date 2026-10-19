@@ -1,0 +1,2 @@
+# Other player can see what his opponent has chosen in RPS game before chosing his own item. There should be somthing which says that opponent has "Not chosen yet" for both players and as soon as one player chooses his item it should say that opponent has "chosen his item" and now it is his turn to choose his item. And once both choses their item reveal each other items and hang in there for 3 seconds before next round starts
+
