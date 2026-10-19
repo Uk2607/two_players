@@ -4,7 +4,7 @@ Handles game selection and pair management via Socket.IO.
 """
 
 
-def register_game_events(socketio, player_service, room_service, ttt_service):
+def register_game_events(socketio, player_service, room_service, game_services: dict):
     """Register game-related event handlers."""
 
     def broadcast_players():
@@ -27,17 +27,26 @@ def register_game_events(socketio, player_service, room_service, ttt_service):
             return
 
         initial_state = {}
-        if game_id == 'tic-tac-toe':
-            initial_state = ttt_service.init_game(room)
+        srv = game_services.get(game_id)
+        if srv and hasattr(srv, 'init_game'):
+            initial_state = srv.init_game(room)
 
-        payload = {
+        p1_state = srv.serialize_for_player(initial_state, room.player1_sid) if (srv and hasattr(srv, 'serialize_for_player')) else initial_state
+        p2_state = srv.serialize_for_player(initial_state, room.player2_sid) if (srv and hasattr(srv, 'serialize_for_player')) else initial_state
+
+        socketio.emit('game_selected', {
             'game_id': game_id,
             'room_id': room_id,
             'selected_by': selector_name,
-            'state': initial_state,
-        }
-        socketio.emit('game_selected', payload, to=room.player1_sid)
-        socketio.emit('game_selected', payload, to=room.player2_sid)
+            'state': p1_state,
+        }, to=room.player1_sid)
+
+        socketio.emit('game_selected', {
+            'game_id': game_id,
+            'room_id': room_id,
+            'selected_by': selector_name,
+            'state': p2_state,
+        }, to=room.player2_sid)
 
     @socketio.on('leave_pair')
     def handle_leave_pair(data=None):

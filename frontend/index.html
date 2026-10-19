@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="css/screens/lobby.css">
     <link rel="stylesheet" href="css/screens/games.css">
     <link rel="stylesheet" href="css/screens/tic-tac-toe.css">
+    <link rel="stylesheet" href="css/screens/rock-paper-scissors.css">
+    <link rel="stylesheet" href="css/screens/connect-four.css">
 </head>
 <body>
     <!-- ═══════ Animated Background ═══════ -->
@@ -240,6 +242,209 @@
                 <div class="modal-actions">
                     <button id="btn-ttt-rematch" class="btn-primary">Play Again</button>
                     <button id="btn-ttt-back" class="btn-secondary">Leave to Lobby</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ SCREEN 5: Game Arena (Rock Paper Scissors) ═══════ -->
+    <section id="screen-rps-arena" class="screen">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="btn-leave-rps" class="btn-icon-only" title="Back to Games">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="top-bar-center">
+                <h2 id="rps-game-title">Rock Paper Scissors</h2>
+            </div>
+            <div class="top-bar-right">
+                <div class="pair-info">
+                    <span class="pair-badge" id="rps-pair-badge">You & Friend</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="arena-content rps-content">
+            <!-- Scoreboard -->
+            <div class="rps-scoreboard">
+                <div class="rps-score-card player-p1-card" id="rps-card-p1">
+                    <div class="avatar rps-avatar" id="rps-avatar-p1">1</div>
+                    <div class="rps-player-details">
+                        <span class="rps-player-name" id="rps-name-p1">Player 1</span>
+                        <span class="rps-status-pill" id="rps-status-p1">Thinking...</span>
+                    </div>
+                    <div class="rps-score" id="rps-score-p1">0</div>
+                </div>
+
+                <div class="rps-round-tracker">
+                    <span class="rps-round-badge" id="rps-round-badge">Round 1</span>
+                    <span class="rps-target-hint">First to 3</span>
+                </div>
+
+                <div class="rps-score-card player-p2-card" id="rps-card-p2">
+                    <div class="rps-score" id="rps-score-p2">0</div>
+                    <div class="rps-player-details">
+                        <span class="rps-player-name" id="rps-name-p2">Player 2</span>
+                        <span class="rps-status-pill" id="rps-status-p2">Thinking...</span>
+                    </div>
+                    <div class="avatar rps-avatar" id="rps-avatar-p2">2</div>
+                </div>
+            </div>
+
+            <!-- Clash Arena Stage -->
+            <div class="rps-stage" id="rps-stage">
+                <!-- Player 1 Hand Slot -->
+                <div class="rps-fighter-slot left rps-slot-p1" id="rps-slot-p1">
+                    <div class="rps-hand-display" id="rps-hand-p1">
+                        <span class="rps-hand-emoji">❓</span>
+                    </div>
+                    <span class="rps-fighter-label" id="rps-fighter-label-p1">Player 1</span>
+                </div>
+
+                <!-- VS Flash Centerpiece -->
+                <div class="rps-vs-divider">
+                    <div class="rps-vs-circle">VS</div>
+                    <div class="rps-clash-sparks" id="rps-clash-sparks"></div>
+                </div>
+
+                <!-- Player 2 Hand Slot -->
+                <div class="rps-fighter-slot right rps-slot-p2" id="rps-slot-p2">
+                    <div class="rps-hand-display" id="rps-hand-p2">
+                        <span class="rps-hand-emoji">❓</span>
+                    </div>
+                    <span class="rps-fighter-label" id="rps-fighter-label-p2">Player 2</span>
+                </div>
+            </div>
+
+            <!-- Round Announcement Banner -->
+            <div class="rps-banner" id="rps-banner">
+                <span class="rps-banner-icon">⚔️</span>
+                <span id="rps-banner-text">Choose your weapon!</span>
+            </div>
+
+            <!-- Player Controls: 3 Pickable Cards -->
+            <div class="rps-controls" id="rps-controls">
+                <p class="rps-controls-hint">Make your secret pick:</p>
+                <div class="rps-buttons-grid">
+                    <button class="rps-choice-btn" data-choice="rock" id="rps-btn-rock">
+                        <span class="choice-icon">✊</span>
+                        <span class="choice-label">Rock</span>
+                        <span class="choice-beats">Crushes Scissors</span>
+                    </button>
+                    <button class="rps-choice-btn" data-choice="paper" id="rps-btn-paper">
+                        <span class="choice-icon">✋</span>
+                        <span class="choice-label">Paper</span>
+                        <span class="choice-beats">Wraps Rock</span>
+                    </button>
+                    <button class="rps-choice-btn" data-choice="scissors" id="rps-btn-scissors">
+                        <span class="choice-icon">✌️</span>
+                        <span class="choice-label">Scissors</span>
+                        <span class="choice-beats">Cuts Paper</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Post-round Countdown / Next Round button -->
+            <div class="rps-next-action hidden" id="rps-next-action">
+                <button id="btn-rps-next" class="btn-primary">
+                    Next Round (<span id="rps-next-countdown">3</span>s)
+                </button>
+            </div>
+        </main>
+
+        <!-- Match Result Modal -->
+        <div id="rps-result-modal" class="modal-overlay hidden">
+            <div class="modal glass-card">
+                <div class="modal-icon" id="rps-result-icon">🏆</div>
+                <h3 id="rps-result-title">Victory!</h3>
+                <p id="rps-result-sub">Alice won the match 3 - 1</p>
+                <div class="modal-actions">
+                    <button id="btn-rps-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-rps-back" class="btn-secondary">Leave to Lobby</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════ SCREEN 6: Game Arena (Connect Four) ═══════ -->
+    <section id="screen-c4-arena" class="screen">
+        <header class="top-bar">
+            <div class="top-bar-left">
+                <button id="btn-leave-c4" class="btn-icon-only" title="Back to Games">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="top-bar-center">
+                <h2 id="c4-game-title">Connect Four</h2>
+            </div>
+            <div class="top-bar-right">
+                <div class="pair-info">
+                    <span class="pair-badge" id="c4-pair-badge">You & Friend</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="arena-content c4-content">
+            <!-- Scoreboard -->
+            <div class="c4-scoreboard">
+                <div class="c4-score-card player-red-card" id="c4-card-red">
+                    <div class="avatar c4-avatar" id="c4-avatar-red">🔴</div>
+                    <div class="c4-player-details">
+                        <span class="c4-player-name" id="c4-name-red">Player 1</span>
+                        <span class="c4-color-badge badge-red">Red Disc</span>
+                    </div>
+                    <div class="c4-score" id="c4-score-red">0</div>
+                </div>
+
+                <div class="c4-vs-card">
+                    <span class="c4-ties-label">DRAWS</span>
+                    <span class="c4-ties-score" id="c4-score-ties">0</span>
+                </div>
+
+                <div class="c4-score-card player-yellow-card" id="c4-card-yellow">
+                    <div class="c4-score" id="c4-score-yellow">0</div>
+                    <div class="c4-player-details">
+                        <span class="c4-player-name" id="c4-name-yellow">Player 2</span>
+                        <span class="c4-color-badge badge-yellow">Yellow Disc</span>
+                    </div>
+                    <div class="avatar c4-avatar" id="c4-avatar-yellow">🟡</div>
+                </div>
+            </div>
+
+            <!-- Turn Banner -->
+            <div class="c4-turn-banner" id="c4-turn-banner">
+                <span class="c4-turn-dot" id="c4-turn-dot"></span>
+                <span id="c4-turn-text">Waiting for game start...</span>
+            </div>
+
+            <!-- 7x6 Board Frame -->
+            <div class="c4-board-wrapper">
+                <!-- 7 Column Drop Arrow Controls -->
+                <div class="c4-column-indicators" id="c4-column-indicators">
+                    <!-- Drop buttons 0..6 injected by JS -->
+                </div>
+
+                <!-- 7x6 Circular Grid -->
+                <div class="c4-board" id="c4-board">
+                    <!-- 42 cells injected by JS -->
+                </div>
+            </div>
+        </main>
+
+        <!-- Round Result Modal -->
+        <div id="c4-result-modal" class="modal-overlay hidden">
+            <div class="modal glass-card">
+                <div class="modal-icon" id="c4-result-icon">🏆</div>
+                <h3 id="c4-result-title">Victory!</h3>
+                <p id="c4-result-sub">Alice connected 4 discs!</p>
+                <div class="modal-actions">
+                    <button id="btn-c4-rematch" class="btn-primary">Play Again</button>
+                    <button id="btn-c4-back" class="btn-secondary">Leave to Lobby</button>
                 </div>
             </div>
         </div>

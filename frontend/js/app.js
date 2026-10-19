@@ -12,6 +12,8 @@ import { RegisterScreen } from './screens/register-screen.js';
 import { LobbyScreen } from './screens/lobby-screen.js';
 import { GamesScreen } from './screens/games-screen.js';
 import { TicTacToeGame } from './games/tic-tac-toe.js';
+import { RockPaperScissorsGame } from './games/rock-paper-scissors.js';
+import { ConnectFourGame } from './games/connect-four.js';
 
 class App {
     constructor() {
@@ -29,6 +31,8 @@ class App {
         screenManager.register('lobby', '#screen-lobby');
         screenManager.register('games', '#screen-games');
         screenManager.register('game-arena', '#screen-game-arena');
+        screenManager.register('rps-arena', '#screen-rps-arena');
+        screenManager.register('c4-arena', '#screen-c4-arena');
 
         // Initialize screens
         this.registerScreen = new RegisterScreen({
@@ -49,6 +53,14 @@ class App {
             onBackToGames: () => this.handleBackToGames(),
         });
 
+        this.rpsGame = new RockPaperScissorsGame({
+            onBackToGames: () => this.handleBackToGames(),
+        });
+
+        this.c4Game = new ConnectFourGame({
+            onBackToGames: () => this.handleBackToGames(),
+        });
+
         // Setup global server socket listeners
         this.setupGlobalSocketHandlers();
 
@@ -66,7 +78,7 @@ class App {
         // Setup browser history back button handling
         window.addEventListener('popstate', (e) => {
             const screen = e.state?.screen || 'register';
-            if (screenManager.current === 'game-arena' || screenManager.current === 'games') {
+            if (screenManager.current === 'game-arena' || screenManager.current === 'rps-arena' || screenManager.current === 'c4-arena' || screenManager.current === 'games') {
                 this.handleLeaveGameRoom();
             } else if (screenManager.current === 'lobby' && screen === 'register') {
                 this.handleLogoutLobby();
@@ -184,6 +196,14 @@ class App {
             this.ticTacToeGame.start(roomData, this.localPlayer, state);
             screenManager.show('game-arena');
             window.history.pushState({ screen: 'game-arena' }, '', '#game-arena');
+        } else if (gameId === 'rock-paper-scissors') {
+            this.rpsGame.start(roomData, this.localPlayer, state);
+            screenManager.show('rps-arena');
+            window.history.pushState({ screen: 'rps-arena' }, '', '#rps-arena');
+        } else if (gameId === 'connect-four') {
+            this.c4Game.start(roomData, this.localPlayer, state);
+            screenManager.show('c4-arena');
+            window.history.pushState({ screen: 'c4-arena' }, '', '#c4-arena');
         } else {
             toastService.info(`${gameId} arena coming next!`);
         }
@@ -208,6 +228,8 @@ class App {
         this.localPlayer = null;
         this.currentRoom = null;
         this.ticTacToeGame.reset();
+        this.rpsGame.reset();
+        this.c4Game.reset();
         this.gamesScreen.clearRoom();
         this.registerScreen.reset();
         screenManager.show('register');
@@ -224,6 +246,8 @@ class App {
     endSessionAndReturnToLobby(message = '', type = 'info') {
         // 1. Reset game arena state and close any open modals
         this.ticTacToeGame.reset();
+        this.rpsGame.reset();
+        this.c4Game.reset();
 
         // 2. Clear current room on games screen and app state
         this.currentRoom = null;
