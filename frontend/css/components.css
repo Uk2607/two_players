@@ -101,6 +101,13 @@
     font-weight: 700;
 }
 
+.top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+
 /* ─── User Badge ────────────────────────────────────────── */
 .user-badge {
     display: flex;

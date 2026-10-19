@@ -75,7 +75,15 @@ export class RegisterScreen {
     reset() {
         if (this._nameInput) {
             this._nameInput.value = '';
+        }
+        if (this._btnJoin) {
             this._btnJoin.disabled = true;
         }
     }
+
+    /** Refresh validation state based on current input value. */
+    refresh() {
+        this._validateInput();
+    }
 }
+

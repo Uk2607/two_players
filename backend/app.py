@@ -13,7 +13,7 @@ from config import Config
 from repositories import PlayerRepository, InviteRepository, RoomRepository
 from services import PlayerService, InviteService, RoomService, TicTacToeService
 from events import register_all_events
-from routers import create_health_router
+from routers import create_health_router, create_player_router
 
 
 def create_app() -> tuple[Flask, SocketIO]:
@@ -28,6 +28,8 @@ def create_app() -> tuple[Flask, SocketIO]:
         app,
         cors_allowed_origins=Config.CORS_ORIGINS,
         async_mode=Config.SOCKETIO_ASYNC_MODE,
+        ping_timeout=10,
+        ping_interval=5,
     )
 
     # ── Repositories (data layer) ────────────────────────────
@@ -45,10 +47,14 @@ def create_app() -> tuple[Flask, SocketIO]:
     health_bp = create_health_router(player_service, room_service)
     app.register_blueprint(health_bp)
 
+    player_bp = create_player_router(socketio, player_service, invite_service, room_service)
+    app.register_blueprint(player_bp)
+
     # ── Socket.IO Events ─────────────────────────────────────
     register_all_events(socketio, player_service, invite_service, room_service, ttt_service)
 
     return app, socketio
+
 
 
 # ── Run ──────────────────────────────────────────────────────

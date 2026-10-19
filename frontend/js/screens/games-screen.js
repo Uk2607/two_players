@@ -33,13 +33,11 @@ export class GamesScreen {
     _setupListeners() {
         if (this._btnLeavePair) {
             this._btnLeavePair.addEventListener('click', () => {
-                if (socketService.connected) {
-                    socketService.emit('leave_pair', {});
-                }
                 this._onLeave?.();
             });
         }
     }
+
 
     _setupSocketEvents() {
         socketService.on('game_selected', (data) => {

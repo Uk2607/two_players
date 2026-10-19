@@ -3,6 +3,7 @@
  * Orchestrates screens, services, games, and real-time multiplayer state.
  */
 
+import { CONFIG } from './config.js';
 import { socketService } from './services/socket-service.js';
 import { screenManager } from './services/screen-manager.js';
 import { toastService } from './services/toast-service.js';
@@ -54,6 +55,24 @@ class App {
         // Setup browser lifecycle listeners for clean disconnect
         this.setupWindowUnloadHandlers();
 
+        // Setup lobby back / logout button
+        const btnLobbyBack = document.getElementById('btn-lobby-back');
+        if (btnLobbyBack) {
+            btnLobbyBack.addEventListener('click', () => {
+                this.handleLogoutLobby();
+            });
+        }
+
+        // Setup browser history back button handling
+        window.addEventListener('popstate', (e) => {
+            const screen = e.state?.screen || 'register';
+            if (screenManager.current === 'game-arena' || screenManager.current === 'games') {
+                this.handleLeaveGameRoom();
+            } else if (screenManager.current === 'lobby' && screen === 'register') {
+                this.handleLogoutLobby();
+            }
+        });
+
         // Connect to Socket.IO backend
         this.registerScreen.setConnectionStatus('connecting', 'Connecting to server...');
 
@@ -75,6 +94,7 @@ class App {
 
         // Show registration screen initially
         screenManager.show('register');
+        window.history.replaceState({ screen: 'register' }, '', '#register');
     }
 
     setupGlobalSocketHandlers() {
@@ -87,6 +107,13 @@ class App {
         // Successful registration
         socketService.on('registered', (data) => {
             this.handleRegistered(data);
+        });
+
+        // Player unregistered (e.g. from logout)
+        socketService.on('unregistered', () => {
+            this.localPlayer = null;
+            screenManager.show('register');
+            window.history.replaceState({ screen: 'register' }, '', '#register');
         });
 
         // Partner closed the tab or lost connection
@@ -108,20 +135,40 @@ class App {
     }
 
     setupWindowUnloadHandlers() {
-        const notifyLeave = () => {
-            if (this.currentRoom && socketService.connected) {
-                socketService.emit('leave_pair');
+        const handleTabClose = () => {
+            const sid = socketService.id;
+            if (!sid) return;
+
+            // Immediately notify backend that this player closed the page/tab
+            // Using sendBeacon guarantees the request is delivered during tab closure
+            const url = `${CONFIG.SERVER_URL}/api/leave`;
+            const payload = JSON.stringify({ sid });
+
+            if (navigator.sendBeacon) {
+                const blob = new Blob([payload], { type: 'application/json' });
+                navigator.sendBeacon(url, blob);
+            } else {
+                fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: payload,
+                    keepalive: true,
+                });
             }
+
+            // Disconnect socket immediately
+            socketService.disconnect();
         };
 
-        window.addEventListener('beforeunload', notifyLeave);
-        window.addEventListener('pagehide', notifyLeave);
+        window.addEventListener('pagehide', handleTabClose);
+        window.addEventListener('beforeunload', handleTabClose);
     }
 
     handleRegistered(player) {
         this.localPlayer = player;
         this.lobbyScreen.setCurrentPlayer(player);
         screenManager.show('lobby');
+        window.history.pushState({ screen: 'lobby' }, '', '#lobby');
         toastService.success(`Welcome, ${player.name}!`);
     }
 
@@ -129,12 +176,14 @@ class App {
         this.currentRoom = roomData;
         this.gamesScreen.setRoom(roomData, this.localPlayer);
         screenManager.show('games');
+        window.history.pushState({ screen: 'games' }, '', '#games');
     }
 
     handleLaunchGame(gameId, roomData, state) {
         if (gameId === 'tic-tac-toe') {
             this.ticTacToeGame.start(roomData, this.localPlayer, state);
             screenManager.show('game-arena');
+            window.history.pushState({ screen: 'game-arena' }, '', '#game-arena');
         } else {
             toastService.info(`${gameId} arena coming next!`);
         }
@@ -152,6 +201,21 @@ class App {
         }
     }
 
+    handleLogoutLobby() {
+        if (socketService.connected) {
+            socketService.emit('unregister');
+        }
+        this.localPlayer = null;
+        this.currentRoom = null;
+        this.ticTacToeGame.reset();
+        this.gamesScreen.clearRoom();
+        this.registerScreen.reset();
+        screenManager.show('register');
+        window.history.pushState({ screen: 'register' }, '', '#register');
+        toastService.info('You left the player list.');
+    }
+
+
     /**
      * Terminate the active game session, reset all state, and navigate to the Lobby player list.
      * @param {string} [message] - Optional message for toast notification
@@ -167,6 +231,7 @@ class App {
 
         // 3. Return to the Player List lobby screen
         screenManager.show('lobby');
+        window.history.pushState({ screen: 'lobby' }, '', '#lobby');
 
         // 4. Show notification if a message was provided
         if (message) {
@@ -179,3 +244,4 @@ class App {
 document.addEventListener('DOMContentLoaded', () => {
     window.__twoPlayersApp = new App();
 });
+

@@ -79,7 +79,15 @@ class SocketService {
     get id() {
         return this._socket?.id ?? null;
     }
+
+    /** Explicitly disconnect the socket. */
+    disconnect() {
+        if (this._socket) {
+            this._socket.disconnect();
+        }
+    }
 }
+
 
 // Singleton instance
 export const socketService = new SocketService();

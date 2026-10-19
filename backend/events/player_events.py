@@ -24,3 +24,16 @@ def register_player_events(socketio, player_service):
         print(f"[*] {result} registered: {sid}")
         emit('registered', {'name': result, 'id': sid})
         socketio.emit('player_list', player_service.get_all_serialized())
+
+    @socketio.on('unregister')
+    def handle_unregister(data=None):
+        from flask import request
+        from flask_socketio import emit
+
+        sid = request.sid
+        player = player_service.unregister(sid)
+        if player:
+            print(f"[-] {player.name} unregistered: {sid}")
+            socketio.emit('player_list', player_service.get_all_serialized())
+        emit('unregistered', {})
+
