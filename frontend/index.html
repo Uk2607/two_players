@@ -713,21 +713,80 @@
                 </div>
             </div>
 
+            <!-- Fleet Intel Status Bar (Enemy Ships) -->
+            <div class="bs-fleet-intel hidden" id="bs-fleet-intel">
+                <span class="bs-intel-label">Enemy Fleet:</span>
+                <div class="bs-intel-ships">
+                    <div class="bs-intel-ship" id="intel-carrier" title="Carrier (3 hits)">
+                        <span class="intel-icon">🚢</span>
+                        <span class="intel-name">Carrier</span>
+                        <div class="intel-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                    </div>
+                    <div class="bs-intel-ship" id="intel-cruiser" title="Cruiser (2 hits)">
+                        <span class="intel-icon">🚤</span>
+                        <span class="intel-name">Cruiser</span>
+                        <div class="intel-dots"><span class="dot"></span><span class="dot"></span></div>
+                    </div>
+                    <div class="bs-intel-ship" id="intel-patrol" title="Patrol Boat (2 hits)">
+                        <span class="intel-icon">⛵</span>
+                        <span class="intel-name">Patrol</span>
+                        <div class="intel-dots"><span class="dot"></span><span class="dot"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile View Switcher (Visible on mobile screens in combat) -->
+            <div class="bs-mobile-tabs hidden" id="bs-mobile-tabs">
+                <button class="bs-tab-btn active" id="btn-tab-enemy" type="button">
+                    <span>🎯 Attack Radar</span>
+                </button>
+                <button class="bs-tab-btn" id="btn-tab-friendly" type="button">
+                    <span>🛡️ My Fleet</span>
+                    <span class="bs-tab-badge hidden" id="bs-friendly-badge">●</span>
+                </button>
+            </div>
+
             <!-- Dual Radar Grids Theatre -->
-            <div class="bs-theatre-stage">
+            <div class="bs-theatre-stage active-tab-enemy" id="bs-theatre-stage">
                 <!-- Target Radar Grid -->
-                <div class="bs-grid-section">
-                    <span class="bs-grid-title">🎯 Enemy Waters (Target Radar)</span>
-                    <div class="bs-grid-container targetable" id="bs-enemy-radar-grid">
-                        <!-- 6x6 cells injected by JS -->
+                <div class="bs-grid-section" id="bs-enemy-section">
+                    <div class="bs-section-header">
+                        <span class="bs-grid-title">🎯 Enemy Waters</span>
+                        <span class="bs-radar-status" id="bs-radar-status">Sonar Active</span>
+                    </div>
+                    <div class="bs-radar-frame">
+                        <div class="bs-col-labels">
+                            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span>
+                        </div>
+                        <div class="bs-grid-row-wrap">
+                            <div class="bs-row-labels">
+                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+                            </div>
+                            <div class="bs-grid-container targetable" id="bs-enemy-radar-grid">
+                                <!-- 6x6 cells injected by JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Friendly Waters Mini Grid -->
-                <div class="bs-grid-section">
-                    <span class="bs-grid-title">🛡️ My Fleet (Defense)</span>
-                    <div class="bs-grid-container mini" id="bs-friendly-fleet-grid">
-                        <!-- 6x6 cells injected by JS -->
+                <!-- Friendly Waters Grid -->
+                <div class="bs-grid-section" id="bs-friendly-section">
+                    <div class="bs-section-header">
+                        <span class="bs-grid-title" id="bs-friendly-title">🛡️ My Fleet Waters</span>
+                        <span class="bs-radar-status defense">Defense Array</span>
+                    </div>
+                    <div class="bs-radar-frame">
+                        <div class="bs-col-labels">
+                            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span>
+                        </div>
+                        <div class="bs-grid-row-wrap">
+                            <div class="bs-row-labels">
+                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+                            </div>
+                            <div class="bs-grid-container mini" id="bs-friendly-fleet-grid">
+                                <!-- 6x6 cells injected by JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

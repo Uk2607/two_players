@@ -25,6 +25,8 @@ export class BattleshipGame {
         this.localPlayer = null;
         this.state = null;
         this.myPlannedShips = [];
+        this.lastShotMessage = null;
+        this.lastWatersHits = 0;
 
         this.cacheElements();
         this.bindEvents();
@@ -36,10 +38,12 @@ export class BattleshipGame {
         this.btnLeave = document.getElementById('btn-leave-bs');
 
         // Scoreboard
+        this.cardP1 = document.getElementById('bs-card-p1');
         this.nameP1 = document.getElementById('bs-name-p1');
         this.avatarP1 = document.getElementById('bs-avatar-p1');
         this.scoreP1 = document.getElementById('bs-score-p1');
 
+        this.cardP2 = document.getElementById('bs-card-p2');
         this.nameP2 = document.getElementById('bs-name-p2');
         this.avatarP2 = document.getElementById('bs-avatar-p2');
         this.scoreP2 = document.getElementById('bs-score-p2');
@@ -57,7 +61,23 @@ export class BattleshipGame {
         this.btnAutoDeploy = document.getElementById('btn-bs-auto-deploy');
         this.btnLockFleet = document.getElementById('btn-bs-lock-fleet');
 
-        // Grids
+        // Fleet Intel Bar
+        this.fleetIntel = document.getElementById('bs-fleet-intel');
+        this.intelCarrier = document.getElementById('intel-carrier');
+        this.intelCruiser = document.getElementById('intel-cruiser');
+        this.intelPatrol = document.getElementById('intel-patrol');
+
+        // Mobile Tabs
+        this.mobileTabs = document.getElementById('bs-mobile-tabs');
+        this.tabEnemy = document.getElementById('btn-tab-enemy');
+        this.tabFriendly = document.getElementById('btn-tab-friendly');
+        this.friendlyBadge = document.getElementById('bs-friendly-badge');
+
+        // Grids & Sections
+        this.theatreStage = document.getElementById('bs-theatre-stage');
+        this.enemySection = document.getElementById('bs-enemy-section');
+        this.friendlySection = document.getElementById('bs-friendly-section');
+        this.friendlyTitle = document.getElementById('bs-friendly-title');
         this.enemyRadarGrid = document.getElementById('bs-enemy-radar-grid');
         this.friendlyFleetGrid = document.getElementById('bs-friendly-fleet-grid');
 
@@ -73,6 +93,30 @@ export class BattleshipGame {
 
     getRoomId() {
         return this.roomData?.room_id || this.roomData?.id;
+    }
+
+    vibrate(pattern) {
+        try {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        } catch (_) {}
+    }
+
+    switchTab(tab) {
+        this.vibrate(10);
+        if (tab === 'enemy') {
+            this.theatreStage?.classList.remove('active-tab-friendly');
+            this.theatreStage?.classList.add('active-tab-enemy');
+            this.tabEnemy?.classList.add('active');
+            this.tabFriendly?.classList.remove('active');
+        } else {
+            this.theatreStage?.classList.remove('active-tab-enemy');
+            this.theatreStage?.classList.add('active-tab-friendly');
+            this.tabFriendly?.classList.add('active');
+            this.tabEnemy?.classList.remove('active');
+            this.friendlyBadge?.classList.add('hidden');
+        }
     }
 
     bindEvents() {
@@ -102,9 +146,18 @@ export class BattleshipGame {
             this.btnSwitch.addEventListener('click', handleSwitchGame);
         }
 
+        // Mobile Tab Switchers
+        if (this.tabEnemy) {
+            this.tabEnemy.addEventListener('click', () => this.switchTab('enemy'));
+        }
+        if (this.tabFriendly) {
+            this.tabFriendly.addEventListener('click', () => this.switchTab('friendly'));
+        }
+
         // Auto Deploy button
         if (this.btnAutoDeploy) {
             this.btnAutoDeploy.addEventListener('click', () => {
+                this.vibrate(15);
                 this.generateRandomFleet();
                 this.renderPlannedShips();
                 if (this.btnLockFleet) this.btnLockFleet.disabled = false;
@@ -118,6 +171,7 @@ export class BattleshipGame {
                     toastService.info('Please arrange your fleet first!');
                     return;
                 }
+                this.vibrate(25);
                 this.btnLockFleet.disabled = true;
                 if (this.btnAutoDeploy) this.btnAutoDeploy.disabled = true;
                 toastService.success('⚓ Fleet locked in! Awaiting enemy...');
@@ -187,7 +241,13 @@ export class BattleshipGame {
         this.roomData = null;
         this.state = null;
         this.myPlannedShips = [];
+        this.lastShotMessage = null;
+        this.lastWatersHits = 0;
         this.resultModal?.classList.add('hidden');
+        this.cardP1?.classList.remove('active-turn');
+        this.cardP2?.classList.remove('active-turn');
+        this.friendlyBadge?.classList.add('hidden');
+        this.switchTab('enemy');
     }
 
     buildGrids() {
@@ -290,6 +350,8 @@ export class BattleshipGame {
             return;
         }
 
+        this.vibrate(20);
+
         socketService.emit('battleship_fire', {
             room_id: this.getRoomId(),
             row: r,
@@ -306,8 +368,13 @@ export class BattleshipGame {
         const my_sid = this.localPlayer?.id;
         const isP1 = my_sid === p1_sid;
         const isMyTurn = state.turn_sid === my_sid && state.phase === 'combat' && state.status === 'in_progress';
+        const isP1Turn = state.turn_sid === p1_sid && state.phase === 'combat' && state.status === 'in_progress';
+        const isP2Turn = state.turn_sid === p2_sid && state.phase === 'combat' && state.status === 'in_progress';
 
-        // 1. Scoreboard
+        // 1. Scoreboard Names, Avatars & Active Turn Glow
+        this.cardP1?.classList.toggle('active-turn', isP1Turn);
+        this.cardP2?.classList.toggle('active-turn', isP2Turn);
+
         if (this.nameP1) this.nameP1.textContent = state.player1_name + (isP1 ? ' (You)' : '');
         if (this.nameP2) this.nameP2.textContent = state.player2_name + (!isP1 ? ' (You)' : '');
         if (this.avatarP1) this.avatarP1.textContent = (state.player1_name || '1')[0].toUpperCase();
@@ -325,8 +392,15 @@ export class BattleshipGame {
         }
 
         // 2. Deployment vs Combat Phase UI visibility
-        if (state.phase === 'placement') {
+        const isPlacement = state.phase === 'placement';
+        this.theatreStage?.classList.toggle('phase-placement', isPlacement);
+
+        if (isPlacement) {
             this.deploymentPanel?.classList.remove('hidden');
+            this.fleetIntel?.classList.add('hidden');
+            this.mobileTabs?.classList.add('hidden');
+            if (this.friendlyTitle) this.friendlyTitle.textContent = '⚓ Deploy Your Fleet (3 Ships)';
+
             const isReady = state.ready?.[my_sid];
             if (this.btnLockFleet) this.btnLockFleet.disabled = isReady;
             if (this.btnAutoDeploy) this.btnAutoDeploy.disabled = isReady;
@@ -338,9 +412,12 @@ export class BattleshipGame {
             }
         } else {
             this.deploymentPanel?.classList.add('hidden');
+            this.fleetIntel?.classList.remove('hidden');
+            this.mobileTabs?.classList.remove('hidden');
+            if (this.friendlyTitle) this.friendlyTitle.textContent = '🛡️ My Fleet Waters';
         }
 
-        // 3. Turn Banner in Combat
+        // 3. Turn Banner & Tactical Feedback in Combat
         if (state.phase === 'combat') {
             if (this.turnBanner && this.turnText && this.turnDot) {
                 this.turnBanner.classList.toggle('my-turn', isMyTurn);
@@ -349,13 +426,48 @@ export class BattleshipGame {
                 if (state.last_shot) {
                     this.turnText.textContent = state.last_shot.message;
                     this.turnBanner.classList.toggle('direct-hit', state.last_shot.result !== 'miss');
+
+                    // Audio/Haptic notification for new shots
+                    if (state.last_shot.message !== this.lastShotMessage) {
+                        this.lastShotMessage = state.last_shot.message;
+                        if (state.last_shot.result === 'sunk') {
+                            this.vibrate([50, 70, 50, 90]);
+                        } else if (state.last_shot.result === 'hit') {
+                            this.vibrate([30, 40, 50]);
+                        } else if (state.last_shot.result === 'miss') {
+                            this.vibrate(15);
+                        }
+                    }
                 } else {
                     this.turnText.textContent = isMyTurn ? 'Target confirmed! Select sector to fire.' : "Radar tracking enemy torpedoes...";
                 }
             }
         }
 
-        // 4. Update Enemy Radar Grid (shots I fired at enemy)
+        // 4. Update Enemy Fleet Intel status
+        if (state.enemy_fleet_status && Array.isArray(state.enemy_fleet_status)) {
+            state.enemy_fleet_status.forEach((ship) => {
+                const isSunk = !!ship.sunk;
+                if (ship.name === 'Carrier') {
+                    this.intelCarrier?.classList.toggle('sunk', isSunk);
+                } else if (ship.name === 'Cruiser') {
+                    this.intelCruiser?.classList.toggle('sunk', isSunk);
+                } else if (ship.name === 'Patrol Boat' || ship.name === 'Patrol') {
+                    this.intelPatrol?.classList.toggle('sunk', isSunk);
+                }
+            });
+        }
+
+        // 5. Friendly incoming hit notification for mobile tab badge
+        const currentMyHits = Object.values(state.my_waters_shots || {}).filter(v => v === 'hit').length;
+        if (this.lastWatersHits !== undefined && currentMyHits > this.lastWatersHits) {
+            if (this.theatreStage?.classList.contains('active-tab-enemy')) {
+                this.friendlyBadge?.classList.remove('hidden');
+            }
+        }
+        this.lastWatersHits = currentMyHits;
+
+        // 6. Update Enemy Radar Grid (shots I fired at enemy)
         if (this.enemyRadarGrid) {
             this.enemyRadarGrid.classList.toggle('targetable', isMyTurn);
 
@@ -381,7 +493,7 @@ export class BattleshipGame {
             }
         }
 
-        // 5. Update Friendly Fleet Grid (my ships + enemy shots on my waters)
+        // 7. Update Friendly Fleet Grid (my ships + enemy shots on my waters)
         if (this.friendlyFleetGrid && state.my_fleet) {
             const shipCells = new Set();
             state.my_fleet.forEach((ship) => {
@@ -413,7 +525,7 @@ export class BattleshipGame {
             }
         }
 
-        // 6. Match Result Modal
+        // 8. Match Result Modal
         if (state.phase === 'match_ended' || state.status === 'won') {
             this.showRoundResult(state, my_sid);
         } else {
@@ -422,6 +534,7 @@ export class BattleshipGame {
     }
 
     showRoundResult(state, my_sid) {
+        this.vibrate([40, 60, 40, 80]);
         const isWinner = state.winner_sid === my_sid;
         if (this.resultIcon) this.resultIcon.textContent = isWinner ? '🏆' : '🌊';
         if (this.resultTitle) this.resultTitle.textContent = isWinner ? 'Naval Victory!' : 'Fleet Sunk!';
