@@ -3,16 +3,40 @@ Two Players - Word Duel Service
 Turn-based competitive word guessing race with strikes, revealed blanks, and score tracking.
 """
 
+import logging
 import random
+from pathlib import Path
 from typing import Optional, List, Tuple
 from models.room import Room
 
-WORD_BANK = [
+logger = logging.getLogger(__name__)
+
+DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "valid-wordle-list.txt"
+
+# Fallback words if file cannot be accessed
+DEFAULT_WORD_BANK = [
     'CYBER', 'PIXEL', 'GHOST', 'ARENA', 'NEXUS', 'SPARK', 'ROBOT', 'FLAME',
     'BLADE', 'TURBO', 'STORM', 'VIPER', 'LASER', 'POWER', 'MAGIC', 'SHADOW',
     'HYPER', 'QUANTUM', 'STEALTH', 'MATRIX', 'GALAXY', 'FUSION', 'TITAN',
     'COSMIC', 'ORBIT', 'VECTOR', 'CRYPTO', 'VORTEX', 'RADAR', 'SHIELD'
 ]
+
+
+def load_word_bank() -> List[str]:
+    """Load valid word bank from valid-wordle-list.txt."""
+    if DATA_PATH.exists():
+        try:
+            with open(DATA_PATH, "r", encoding="utf-8") as f:
+                words = [line.strip().upper() for line in f if line.strip() and line.strip().isalpha()]
+            if words:
+                logger.info("Loaded %d words from %s", len(words), DATA_PATH)
+                return words
+        except Exception as e:
+            logger.error("Failed to read word list from %s: %s", DATA_PATH, e)
+    return DEFAULT_WORD_BANK
+
+
+WORD_BANK = load_word_bank()
 
 MAX_STRIKES = 6
 

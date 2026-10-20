@@ -31,6 +31,8 @@ export class ConnectFourGame {
         this.btnLeave = document.getElementById('btn-leave-c4');
 
         // Scoreboard
+        this.cardRed = document.getElementById('c4-card-red');
+        this.cardYellow = document.getElementById('c4-card-yellow');
         this.nameRed = document.getElementById('c4-name-red');
         this.avatarRed = document.getElementById('c4-avatar-red');
         this.scoreRed = document.getElementById('c4-score-red');
@@ -198,6 +200,10 @@ export class ConnectFourGame {
             return;
         }
 
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try { navigator.vibrate(20); } catch (_) {}
+        }
+
         socketService.emit('c4_drop', {
             room_id: this.getRoomId(),
             col: col,
@@ -222,7 +228,11 @@ export class ConnectFourGame {
         if (this.scoreYellow) this.scoreYellow.textContent = state.scores?.yellow ?? 0;
         if (this.scoreTies) this.scoreTies.textContent = state.scores?.ties ?? 0;
 
-        // 2. Turn Banner
+        // 2. Turn Banner & Card Active Glow
+        const isRedTurn = state.turn_color === 'red';
+        this.cardRed?.classList.toggle('active-turn', isRedTurn && state.status === 'in_progress');
+        this.cardYellow?.classList.toggle('active-turn', !isRedTurn && state.status === 'in_progress');
+
         if (this.turnBanner && this.turnText && this.turnDot) {
             this.turnBanner.classList.toggle('my-turn', isMyTurn);
             this.turnDot.className = `c4-turn-dot ${state.turn_color === 'yellow' ? 'yellow' : ''}`;
@@ -266,14 +276,20 @@ export class ConnectFourGame {
                     cell.innerHTML = '';
                 } else {
                     let disc = cell.querySelector('.c4-disc');
-                    if (!disc) {
+                    const isNew = !disc;
+                    if (isNew) {
                         disc = document.createElement('div');
                         cell.appendChild(disc);
-                        if (isLastDrop) {
-                            disc.classList.add('dropping');
-                        }
                     }
                     disc.className = `c4-disc ${color} ${isWinning ? 'winner-disc' : ''}`;
+
+                    if (isNew && isLastDrop) {
+                        disc.style.setProperty('--drop-row', String(r));
+                        disc.classList.add('dropping');
+                        disc.addEventListener('animationend', () => {
+                            disc.classList.remove('dropping');
+                        }, { once: true });
+                    }
                 }
             }
         }
@@ -289,10 +305,16 @@ export class ConnectFourGame {
     showRoundResult(state, my_sid) {
         if (state.status === 'won') {
             const isWinner = state.winner_sid === my_sid;
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate(isWinner ? [40, 60, 80] : [60]); } catch (_) {}
+            }
             if (this.resultIcon) this.resultIcon.textContent = isWinner ? '🏆' : '🔴';
             if (this.resultTitle) this.resultTitle.textContent = isWinner ? 'Four in a Row!' : 'Round Over';
             if (this.resultSub) this.resultSub.textContent = isWinner ? 'You connected 4 discs and won!' : `${state.winner_name} connected 4 discs and won.`;
         } else {
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate(40); } catch (_) {}
+            }
             if (this.resultIcon) this.resultIcon.textContent = '🤝';
             if (this.resultTitle) this.resultTitle.textContent = "It's a Draw!";
             if (this.resultSub) this.resultSub.textContent = 'The board is completely full without 4 in a row.';

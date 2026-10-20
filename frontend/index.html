@@ -299,9 +299,9 @@
         </header>
 
         <main class="arena-content rps-content">
-            <!-- Scoreboard -->
-            <div class="rps-scoreboard">
-                <div class="rps-score-card player-p1-card" id="rps-card-p1">
+            <!-- ── HUD Header (Scoreboard & Match Info) ── -->
+            <div class="rps-hud">
+                <div class="rps-hud-card player-p1-card" id="rps-card-p1">
                     <div class="avatar rps-avatar" id="rps-avatar-p1">1</div>
                     <div class="rps-player-details">
                         <span class="rps-player-name" id="rps-name-p1">Player 1</span>
@@ -315,7 +315,7 @@
                     <span class="rps-target-hint">First to 3</span>
                 </div>
 
-                <div class="rps-score-card player-p2-card" id="rps-card-p2">
+                <div class="rps-hud-card player-p2-card" id="rps-card-p2">
                     <div class="rps-score" id="rps-score-p2">0</div>
                     <div class="rps-player-details">
                         <span class="rps-player-name" id="rps-name-p2">Player 2</span>
@@ -325,64 +325,70 @@
                 </div>
             </div>
 
-            <!-- Clash Arena Stage -->
+            <!-- ── Battle Arena Stage ── -->
             <div class="rps-stage" id="rps-stage">
-                <!-- Player 1 Hand Slot -->
-                <div class="rps-fighter-slot left rps-slot-p1" id="rps-slot-p1">
-                    <div class="rps-hand-display" id="rps-hand-p1">
-                        <span class="rps-hand-emoji">❓</span>
+                <div class="rps-arena-fighters">
+                    <!-- Player 1 Hand Slot -->
+                    <div class="rps-fighter-slot left rps-slot-p1" id="rps-slot-p1">
+                        <div class="rps-pedestal p1-pedestal"></div>
+                        <div class="rps-hand-display" id="rps-hand-p1">
+                            <span class="rps-hand-emoji">❓</span>
+                        </div>
+                        <span class="rps-fighter-label" id="rps-fighter-label-p1">Player 1</span>
                     </div>
-                    <span class="rps-fighter-label" id="rps-fighter-label-p1">Player 1</span>
-                </div>
 
-                <!-- VS Flash Centerpiece -->
-                <div class="rps-vs-divider">
-                    <div class="rps-vs-circle">VS</div>
-                    <div class="rps-clash-sparks" id="rps-clash-sparks"></div>
-                </div>
-
-                <!-- Player 2 Hand Slot -->
-                <div class="rps-fighter-slot right rps-slot-p2" id="rps-slot-p2">
-                    <div class="rps-hand-display" id="rps-hand-p2">
-                        <span class="rps-hand-emoji">❓</span>
+                    <!-- VS Flash Centerpiece -->
+                    <div class="rps-vs-divider">
+                        <div class="rps-clash-ring"></div>
+                        <div class="rps-vs-circle">VS</div>
+                        <div class="rps-clash-sparks" id="rps-clash-sparks"></div>
                     </div>
-                    <span class="rps-fighter-label" id="rps-fighter-label-p2">Player 2</span>
+
+                    <!-- Player 2 Hand Slot -->
+                    <div class="rps-fighter-slot right rps-slot-p2" id="rps-slot-p2">
+                        <div class="rps-pedestal p2-pedestal"></div>
+                        <div class="rps-hand-display" id="rps-hand-p2">
+                            <span class="rps-hand-emoji">❓</span>
+                        </div>
+                        <span class="rps-fighter-label" id="rps-fighter-label-p2">Player 2</span>
+                    </div>
+                </div>
+
+                <!-- Round Announcement Banner inside Arena -->
+                <div class="rps-banner" id="rps-banner">
+                    <span class="rps-banner-icon">⚔️</span>
+                    <span id="rps-banner-text">Choose your weapon!</span>
                 </div>
             </div>
 
-            <!-- Round Announcement Banner -->
-            <div class="rps-banner" id="rps-banner">
-                <span class="rps-banner-icon">⚔️</span>
-                <span id="rps-banner-text">Choose your weapon!</span>
-            </div>
+            <!-- ── Weapon Command Deck ── -->
+            <div class="rps-dock">
+                <div class="rps-controls" id="rps-controls">
+                    <div class="rps-buttons-grid">
+                        <button class="rps-choice-btn btn-rock" data-choice="rock" id="rps-btn-rock">
+                            <span class="choice-icon">✊</span>
+                            <span class="choice-label">Rock</span>
+                            <span class="choice-beats">Beats Scissors</span>
+                        </button>
+                        <button class="rps-choice-btn btn-paper" data-choice="paper" id="rps-btn-paper">
+                            <span class="choice-icon">✋</span>
+                            <span class="choice-label">Paper</span>
+                            <span class="choice-beats">Beats Rock</span>
+                        </button>
+                        <button class="rps-choice-btn btn-scissors" data-choice="scissors" id="rps-btn-scissors">
+                            <span class="choice-icon">✌️</span>
+                            <span class="choice-label">Scissors</span>
+                            <span class="choice-beats">Beats Paper</span>
+                        </button>
+                    </div>
+                </div>
 
-            <!-- Player Controls: 3 Pickable Cards -->
-            <div class="rps-controls" id="rps-controls">
-                <p class="rps-controls-hint">Make your secret pick:</p>
-                <div class="rps-buttons-grid">
-                    <button class="rps-choice-btn" data-choice="rock" id="rps-btn-rock">
-                        <span class="choice-icon">✊</span>
-                        <span class="choice-label">Rock</span>
-                        <span class="choice-beats">Crushes Scissors</span>
-                    </button>
-                    <button class="rps-choice-btn" data-choice="paper" id="rps-btn-paper">
-                        <span class="choice-icon">✋</span>
-                        <span class="choice-label">Paper</span>
-                        <span class="choice-beats">Wraps Rock</span>
-                    </button>
-                    <button class="rps-choice-btn" data-choice="scissors" id="rps-btn-scissors">
-                        <span class="choice-icon">✌️</span>
-                        <span class="choice-label">Scissors</span>
-                        <span class="choice-beats">Cuts Paper</span>
+                <!-- Post-round Countdown / Next Round button -->
+                <div class="rps-next-action hidden" id="rps-next-action">
+                    <button id="btn-rps-next" class="btn-primary">
+                        Next Round (<span id="rps-next-countdown">3</span>s)
                     </button>
                 </div>
-            </div>
-
-            <!-- Post-round Countdown / Next Round button -->
-            <div class="rps-next-action hidden" id="rps-next-action">
-                <button id="btn-rps-next" class="btn-primary">
-                    Next Round (<span id="rps-next-countdown">3</span>s)
-                </button>
             </div>
         </main>
 
@@ -617,9 +623,12 @@
 
             <!-- Direct Solve Input Bar -->
             <div class="word-solve-bar">
-                <input type="text" id="word-solve-input" class="word-solve-input" placeholder="SOLVE FULL WORD..."
-                    maxlength="12" autocomplete="off" />
-                <button id="btn-word-solve" class="word-solve-btn">SOLVE (+50)</button>
+                <input type="text" id="word-solve-input" class="word-solve-input" placeholder="Solve full word..."
+                    maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+                <button id="btn-word-solve" class="word-solve-btn">
+                    <span>SOLVE</span>
+                    <span class="word-solve-bonus">+50</span>
+                </button>
             </div>
 
             <!-- Virtual QWERTY Keyboard -->
@@ -704,21 +713,80 @@
                 </div>
             </div>
 
+            <!-- Fleet Intel Status Bar (Enemy Ships) -->
+            <div class="bs-fleet-intel hidden" id="bs-fleet-intel">
+                <span class="bs-intel-label">Enemy Fleet:</span>
+                <div class="bs-intel-ships">
+                    <div class="bs-intel-ship" id="intel-carrier" title="Carrier (3 hits)">
+                        <span class="intel-icon">🚢</span>
+                        <span class="intel-name">Carrier</span>
+                        <div class="intel-dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                    </div>
+                    <div class="bs-intel-ship" id="intel-cruiser" title="Cruiser (2 hits)">
+                        <span class="intel-icon">🚤</span>
+                        <span class="intel-name">Cruiser</span>
+                        <div class="intel-dots"><span class="dot"></span><span class="dot"></span></div>
+                    </div>
+                    <div class="bs-intel-ship" id="intel-patrol" title="Patrol Boat (2 hits)">
+                        <span class="intel-icon">⛵</span>
+                        <span class="intel-name">Patrol</span>
+                        <div class="intel-dots"><span class="dot"></span><span class="dot"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mobile View Switcher (Visible on mobile screens in combat) -->
+            <div class="bs-mobile-tabs hidden" id="bs-mobile-tabs">
+                <button class="bs-tab-btn active" id="btn-tab-enemy" type="button">
+                    <span>🎯 Attack Radar</span>
+                </button>
+                <button class="bs-tab-btn" id="btn-tab-friendly" type="button">
+                    <span>🛡️ My Fleet</span>
+                    <span class="bs-tab-badge hidden" id="bs-friendly-badge">●</span>
+                </button>
+            </div>
+
             <!-- Dual Radar Grids Theatre -->
-            <div class="bs-theatre-stage">
+            <div class="bs-theatre-stage active-tab-enemy" id="bs-theatre-stage">
                 <!-- Target Radar Grid -->
-                <div class="bs-grid-section">
-                    <span class="bs-grid-title">🎯 Enemy Waters (Target Radar)</span>
-                    <div class="bs-grid-container targetable" id="bs-enemy-radar-grid">
-                        <!-- 6x6 cells injected by JS -->
+                <div class="bs-grid-section" id="bs-enemy-section">
+                    <div class="bs-section-header">
+                        <span class="bs-grid-title">🎯 Enemy Waters</span>
+                        <span class="bs-radar-status" id="bs-radar-status">Sonar Active</span>
+                    </div>
+                    <div class="bs-radar-frame">
+                        <div class="bs-col-labels">
+                            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span>
+                        </div>
+                        <div class="bs-grid-row-wrap">
+                            <div class="bs-row-labels">
+                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+                            </div>
+                            <div class="bs-grid-container targetable" id="bs-enemy-radar-grid">
+                                <!-- 6x6 cells injected by JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Friendly Waters Mini Grid -->
-                <div class="bs-grid-section">
-                    <span class="bs-grid-title">🛡️ My Fleet (Defense)</span>
-                    <div class="bs-grid-container mini" id="bs-friendly-fleet-grid">
-                        <!-- 6x6 cells injected by JS -->
+                <!-- Friendly Waters Grid -->
+                <div class="bs-grid-section" id="bs-friendly-section">
+                    <div class="bs-section-header">
+                        <span class="bs-grid-title" id="bs-friendly-title">🛡️ My Fleet Waters</span>
+                        <span class="bs-radar-status defense">Defense Array</span>
+                    </div>
+                    <div class="bs-radar-frame">
+                        <div class="bs-col-labels">
+                            <span>A</span><span>B</span><span>C</span><span>D</span><span>E</span><span>F</span>
+                        </div>
+                        <div class="bs-grid-row-wrap">
+                            <div class="bs-row-labels">
+                                <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+                            </div>
+                            <div class="bs-grid-container mini" id="bs-friendly-fleet-grid">
+                                <!-- 6x6 cells injected by JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

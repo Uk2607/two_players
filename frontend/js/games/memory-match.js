@@ -29,6 +29,8 @@ export class MemoryMatchGame {
         this.btnLeave = document.getElementById('btn-leave-memory');
 
         // Scoreboard
+        this.cardP1 = document.getElementById('memory-card-p1');
+        this.cardP2 = document.getElementById('memory-card-p2');
         this.nameP1 = document.getElementById('memory-name-p1');
         this.avatarP1 = document.getElementById('memory-avatar-p1');
         this.pairsP1 = document.getElementById('memory-pairs-p1');
@@ -196,6 +198,10 @@ export class MemoryMatchGame {
             return;
         }
 
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try { navigator.vibrate(15); } catch (_) {}
+        }
+
         socketService.emit('memory_flip', {
             room_id: this.getRoomId(),
             index: index,
@@ -229,11 +235,21 @@ export class MemoryMatchGame {
         const pairsRemaining = 8 - (p1Pairs + p2Pairs);
         if (this.pairsLeftBadge) this.pairsLeftBadge.textContent = `${pairsRemaining} Left`;
 
-        // 2. Turn Banner
+        // 2. Turn Banner & Scorecard Active Turn
+        const isP1Turn = state.turn_sid === p1_sid;
+        this.cardP1?.classList.toggle('active-turn', isP1Turn && state.status === 'in_progress');
+        this.cardP2?.classList.toggle('active-turn', !isP1Turn && state.status === 'in_progress');
+
         if (this.turnBanner && this.turnText && this.turnDot) {
             this.turnBanner.classList.toggle('my-turn', isMyTurn);
             this.turnBanner.classList.toggle('matched-bonus', state.last_flip_result === 'match');
             this.turnDot.className = `memory-turn-dot ${state.turn_sid === p2_sid ? 'p2' : ''}`;
+
+            if (state.last_flip_result === 'match' && typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate([30, 45, 30]); } catch (_) {}
+            } else if (state.last_flip_result === 'mismatch' && typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate(45); } catch (_) {}
+            }
 
             if (state.status === 'in_progress') {
                 const turnName = state.turn_sid === p1_sid ? state.player1_name : state.player2_name;
@@ -298,6 +314,9 @@ export class MemoryMatchGame {
     showRoundResult(state, my_sid) {
         if (state.status === 'won') {
             const isWinner = state.winner_sid === my_sid;
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate(isWinner ? [40, 60, 80] : [60]); } catch (_) {}
+            }
             if (this.resultIcon) this.resultIcon.textContent = isWinner ? '🏆' : '🃏';
             if (this.resultTitle) this.resultTitle.textContent = isWinner ? 'Master of Memory!' : 'Game Over';
             if (this.resultSub) {
