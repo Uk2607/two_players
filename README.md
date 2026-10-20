@@ -183,21 +183,35 @@ python3 -m http.server 3000 --bind 0.0.0.0
 
 ---
 
-### Deployment & Production Overrides
+### Single-Service Cloud Deployment (Recommended)
 
-- **Single Host / Monolith / LAN**:
-  Leave `BACKEND_URL` empty in `.env`. The frontend automatically infers the backend URL from the current browser host on port 5050.
-- **Separate Cloud Deployment (e.g., Frontend on Vercel/Netlify, Backend on Railway/Render/Docker)**:
-  1. Set `CORS_ORIGINS=https://your-frontend-domain.com` in backend `.env` or provider environment variables.
-  2. In `frontend/env.example.js`, copy to `frontend/env.js` and set:
-     ```javascript
-     window.__ENV__ = {
-         BACKEND_URL: 'https://your-backend-api.up.railway.app'
-     };
-     ```
-     Or inject `BACKEND_URL` during your deployment build step.
+The app is packaged as a **self-contained monolith**: the Python Flask backend serves both the WebSocket API and the frontend UI directly on a single port.
+
+#### Deploying to [Render.com](https://render.com/) (Free)
+1. Fork or push this repository to your GitHub account.
+2. Sign in to [Render](https://dashboard.render.com/) and click **New +** → **Blueprint** (or **Web Service**).
+3. Connect your repository (`two_players`).
+4. Render will automatically detect [`render.yaml`](file:///render.yaml) and configure:
+   - **Build Command**: `pip install -r backend/requirements.txt`
+   - **Start Command**: `python backend/app.py`
+5. Render assigns you a free public HTTPS URL (e.g. `https://two-players-xxxx.onrender.com`).
+6. Open the URL on two devices anywhere in the world and play!
+
+#### Deploying to [Railway.app](https://railway.app/)
+1. Sign in to [Railway](https://railway.app/) and click **New Project** → **Deploy from GitHub repo**.
+2. Select your `two_players` repository.
+3. Railway detects [`Procfile`](file:///Procfile) and [`requirements.txt`](file:///requirements.txt) automatically.
+4. Under **Settings** → **Networking**, click **Generate Domain**.
+5. Your game is live!
 
 ---
+
+### Local Single-Command Running
+Because Flask serves the frontend directly, you only need to run **one command** locally:
+```bash
+python backend/app.py
+```
+Open **`http://localhost:5050`** (or your LAN IP) in your browser — both the game interface and the real-time multiplayer server run seamlessly together on port 5050 with zero CORS configuration.
 
 ---
 

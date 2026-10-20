@@ -4,12 +4,18 @@
  */
 
 const getBackendUrl = () => {
-    // 1. Explicit deployment override via window.__ENV__ (from env.js or deployment inject)
+    // 1. Explicit deployment override via window.__ENV__ (from env.js or hosting dashboard)
     if (window.__ENV__?.BACKEND_URL && window.__ENV__.BACKEND_URL.trim() !== '') {
         return window.__ENV__.BACKEND_URL.trim().replace(/\/+$/, '');
     }
 
-    // 2. Derive host dynamically from current browser location (supports WiFi/LAN & localhost)
+    // 2. When deployed on the cloud (https://domain.com) or loaded from the backend (http://localhost:5050):
+    // Both frontend and backend share the exact same origin!
+    if (window.location.port === '5050' || !window.location.port || window.location.protocol === 'https:') {
+        return window.location.origin;
+    }
+
+    // 3. Fallback when running standalone frontend dev server on a different port (e.g. 3000):
     const hostname = window.location.hostname;
     const host = (!hostname || hostname === '0.0.0.0') ? 'localhost' : hostname;
     const port = window.__ENV__?.PORT || 5050;
