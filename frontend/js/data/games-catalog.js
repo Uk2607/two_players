@@ -10,7 +10,7 @@ export const GAMES = [
         desc: 'The classic 3×3 grid showdown. Get three in a row to win!',
         icon: '✕○',
         tag: 'Classic',
-        color: 'purple',
+        color: 'emerald',
     },
     {
         id: 'rock-paper-scissors',

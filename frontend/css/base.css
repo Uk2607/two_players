@@ -10,28 +10,30 @@
     --bg-card: rgba(16, 19, 38, 0.65);
     --bg-card-hover: rgba(22, 26, 52, 0.8);
 
-    --accent-primary: #6c5ce7;
-    --accent-secondary: #a29bfe;
-    --accent-glow: rgba(108, 92, 231, 0.35);
+    --accent-primary: #00e676;
+    --accent-primary-rgb: 0, 230, 118;
+    --accent-secondary: #55efc4;
+    --accent-secondary-rgb: 85, 239, 196;
+    --accent-glow: rgba(0, 230, 118, 0.35);
     --accent-cyan: #00cec9;
     --accent-pink: #fd79a8;
     --accent-orange: #f39c12;
-    --accent-green: #00b894;
-    --accent-red: #e74c3c;
+    --accent-green: #00e676;
+    --accent-red: #ff4757;
 
     --text-primary: #f0f0f8;
     --text-secondary: #8b8da3;
     --text-muted: #555770;
 
     --border-subtle: rgba(255, 255, 255, 0.06);
-    --border-glow: rgba(108, 92, 231, 0.3);
+    --border-glow: rgba(0, 230, 118, 0.3);
 
     --radius-sm: 8px;
     --radius-md: 14px;
     --radius-lg: 20px;
     --radius-xl: 28px;
 
-    --shadow-glow: 0 0 30px rgba(108, 92, 231, 0.15);
+    --shadow-glow: 0 0 30px rgba(0, 230, 118, 0.18);
     --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
 
     --font-heading: 'Outfit', sans-serif;
