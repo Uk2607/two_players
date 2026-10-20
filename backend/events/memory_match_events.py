@@ -8,12 +8,16 @@ def register_memory_match_events(socketio, room_service, memory_service):
     """Register Memory Match event handlers."""
 
     def emit_memory_update(room, state):
-        payload = {
+        p1_payload = {
             'room_id': room.room_id,
-            'state': state,
+            'state': memory_service.serialize_for_player(state, room.player1_sid),
         }
-        socketio.emit('memory_update', payload, to=room.player1_sid)
-        socketio.emit('memory_update', payload, to=room.player2_sid)
+        p2_payload = {
+            'room_id': room.room_id,
+            'state': memory_service.serialize_for_player(state, room.player2_sid),
+        }
+        socketio.emit('memory_update', p1_payload, to=room.player1_sid)
+        socketio.emit('memory_update', p2_payload, to=room.player2_sid)
 
     @socketio.on('memory_flip')
     def handle_memory_flip(data):

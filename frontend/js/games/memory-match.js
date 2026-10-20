@@ -281,7 +281,7 @@ export class MemoryMatchGame {
             if (!cardEl) return;
 
             const symbolEl = cardEl.querySelector('.memory-card-symbol');
-            if (symbolEl) {
+            if (symbolEl && card.symbol) {
                 symbolEl.textContent = card.symbol;
             }
 
