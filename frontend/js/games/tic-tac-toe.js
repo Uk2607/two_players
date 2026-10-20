@@ -139,6 +139,10 @@ export class TicTacToeGame {
             return;
         }
 
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try { navigator.vibrate(20); } catch (_) {}
+        }
+
         socketService.emit('ttt_move', {
             room_id: this._roomData.room_id,
             index: index,
@@ -216,6 +220,9 @@ export class TicTacToeGame {
         // 5. Handle Game Conclusion
         if (state.status === 'won') {
             const isWinner = state.winner_sid === this._localPlayer?.id;
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate(isWinner ? [40, 60, 80] : [60]); } catch (_) {}
+            }
             setTimeout(() => {
                 this.showResultModal({
                     icon: isWinner ? '🏆' : '⚔️',
@@ -224,6 +231,9 @@ export class TicTacToeGame {
                 });
             }, 600);
         } else if (state.status === 'draw') {
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try { navigator.vibrate(40); } catch (_) {}
+            }
             setTimeout(() => {
                 this.showResultModal({
                     icon: '🤝',
