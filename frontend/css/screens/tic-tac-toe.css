@@ -38,12 +38,12 @@
 
 .ttt-score-card.active-turn {
     border-color: var(--accent-glow);
-    box-shadow: 0 0 15px rgba(108, 92, 231, 0.25);
+    box-shadow: 0 0 15px rgba(0, 230, 118, 0.25);
 }
 
 .player-x-card.active-turn {
     border-color: var(--accent-primary);
-    box-shadow: 0 0 20px rgba(108, 92, 231, 0.35);
+    box-shadow: 0 0 20px rgba(0, 230, 118, 0.35);
 }
 
 .player-o-card.active-turn {
@@ -84,7 +84,7 @@
 }
 
 .badge-x {
-    background: rgba(108, 92, 231, 0.2);
+    background: rgba(0, 230, 118, 0.2);
     color: var(--accent-secondary);
 }
 
@@ -151,8 +151,8 @@
 }
 
 .ttt-turn-banner.my-turn {
-    border-color: rgba(108, 92, 231, 0.4);
-    background: rgba(108, 92, 231, 0.1);
+    border-color: rgba(0, 230, 118, 0.4);
+    background: rgba(0, 230, 118, 0.1);
 }
 
 .ttt-turn-banner.opponent-turn .turn-dot {
@@ -202,8 +202,8 @@
 }
 
 .ttt-cell:hover:not(:disabled):not(.cell-x):not(.cell-o) {
-    background: rgba(108, 92, 231, 0.08);
-    border-color: rgba(108, 92, 231, 0.4);
+    background: rgba(0, 230, 118, 0.08);
+    border-color: rgba(0, 230, 118, 0.4);
     transform: scale(0.98);
 }
 
@@ -213,7 +213,7 @@
 
 .ttt-cell.cell-x {
     color: var(--accent-secondary);
-    text-shadow: 0 0 25px rgba(162, 155, 254, 0.7);
+    text-shadow: 0 0 25px rgba(0, 230, 118, 0.7);
     animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 

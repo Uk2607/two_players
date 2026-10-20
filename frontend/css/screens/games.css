@@ -92,9 +92,12 @@
 }
 
 /* ─── Card Color Variants ───────────────────────────────── */
-.game-card[data-color="purple"] .game-card-icon { background: rgba(108, 92, 231, 0.15); color: var(--accent-primary); }
-.game-card[data-color="purple"]::before { background: linear-gradient(135deg, rgba(108, 92, 231, 0.06), transparent); }
-.game-card[data-color="purple"] .game-card-tag { background: rgba(108, 92, 231, 0.12); color: var(--accent-secondary); }
+.game-card[data-color="emerald"] .game-card-icon,
+.game-card[data-color="purple"] .game-card-icon { background: rgba(0, 230, 118, 0.15); color: var(--accent-primary); }
+.game-card[data-color="emerald"]::before,
+.game-card[data-color="purple"]::before { background: linear-gradient(135deg, rgba(0, 230, 118, 0.08), transparent); }
+.game-card[data-color="emerald"] .game-card-tag,
+.game-card[data-color="purple"] .game-card-tag { background: rgba(0, 230, 118, 0.15); color: var(--accent-primary); }
 
 .game-card[data-color="cyan"] .game-card-icon { background: rgba(0, 206, 201, 0.15); color: var(--accent-cyan); }
 .game-card[data-color="cyan"]::before { background: linear-gradient(135deg, rgba(0, 206, 201, 0.06), transparent); }
