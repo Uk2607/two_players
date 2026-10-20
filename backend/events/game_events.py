@@ -4,6 +4,24 @@ Handles game selection and pair management via Socket.IO.
 """
 
 
+"""
+Two Players - Game Events
+Handles game selection and pair management via Socket.IO.
+"""
+
+import uuid
+from datetime import datetime, timezone
+
+GAME_TITLES = {
+    'tic-tac-toe': 'Tic Tac Toe',
+    'rock-paper-scissors': 'Rock Paper Scissors',
+    'connect-four': 'Connect Four',
+    'memory-match': 'Memory Match',
+    'word-duel': 'Word Duel',
+    'battleship': 'Battleship',
+}
+
+
 def register_game_events(socketio, player_service, room_service, game_services: dict):
     """Register game-related event handlers."""
 
@@ -48,6 +66,20 @@ def register_game_events(socketio, player_service, room_service, game_services: 
             'state': p2_state,
         }, to=room.player2_sid)
 
+        # Broadcast room activity to in-room chat
+        game_title = GAME_TITLES.get(game_id, game_id)
+        act_payload = {
+            'id': str(uuid.uuid4())[:8],
+            'room_id': room_id,
+            'sender_id': 'system',
+            'sender_name': 'Room',
+            'text': f"🎮 {selector_name} selected {game_title}",
+            'type': 'activity',
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+        }
+        socketio.emit('chat_message', act_payload, to=room.player1_sid)
+        socketio.emit('chat_message', act_payload, to=room.player2_sid)
+
     @socketio.on('switch_game')
     def handle_switch_game(data=None):
         from flask import request
@@ -71,6 +103,19 @@ def register_game_events(socketio, player_service, room_service, game_services: 
         }
         socketio.emit('game_switched', payload, to=room.player1_sid)
         socketio.emit('game_switched', payload, to=room.player2_sid)
+
+        # Broadcast room activity to in-room chat
+        act_payload = {
+            'id': str(uuid.uuid4())[:8],
+            'room_id': room.room_id,
+            'sender_id': 'system',
+            'sender_name': 'Room',
+            'text': f"🔄 {name} returned to Game Selection",
+            'type': 'activity',
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+        }
+        socketio.emit('chat_message', act_payload, to=room.player1_sid)
+        socketio.emit('chat_message', act_payload, to=room.player2_sid)
 
     @socketio.on('leave_pair')
     def handle_leave_pair(data=None):

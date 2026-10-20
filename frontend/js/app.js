@@ -17,6 +17,7 @@ import { ConnectFourGame } from './games/connect-four.js';
 import { MemoryMatchGame } from './games/memory-match.js';
 import { WordDuelGame } from './games/word-duel.js';
 import { BattleshipGame } from './games/battleship.js';
+import { ChatWidget } from './components/chat-widget.js';
 
 // Prevent Chromium PNA issues when opened via 0.0.0.0
 if (window.location.hostname === '0.0.0.0') {
@@ -83,6 +84,9 @@ class App {
         this.battleshipGame = new BattleshipGame({
             onBackToGames: () => this.handleBackToGames(),
         });
+
+        // Initialize in-room floating chat widget
+        this.chatWidget = new ChatWidget();
 
         // Setup global server socket listeners
         this.setupGlobalSocketHandlers();
@@ -196,6 +200,11 @@ class App {
         socketService.on('left_pair', () => {
             this.endSessionAndReturnToLobby('You left the game and returned to player list.', 'info');
         });
+
+        // In-room chat or activity message received
+        socketService.on('chat_message', (payload) => {
+            this.chatWidget?.receiveMessage(payload);
+        });
     }
 
     setupWindowUnloadHandlers() {
@@ -228,9 +237,21 @@ class App {
         window.addEventListener('beforeunload', handleTabClose);
     }
 
+    updateHeaderUserAvatars(player) {
+        if (!player) return;
+        const initial = (player.name || 'U')[0].toUpperCase();
+        document.querySelectorAll('.header-user-avatar').forEach((el) => {
+            el.textContent = initial;
+            if (el.parentElement) {
+                el.parentElement.title = `You: ${player.name}`;
+            }
+        });
+    }
+
     handleRegistered(player) {
         this.registerScreen.enableSubmit();
         this.localPlayer = player;
+        this.updateHeaderUserAvatars(player);
         this.lobbyScreen.setCurrentPlayer(player);
         screenManager.show('lobby');
         window.history.pushState({ screen: 'lobby' }, '', '#lobby');
@@ -239,7 +260,9 @@ class App {
 
     handlePaired(roomData) {
         this.currentRoom = roomData;
+        this.updateHeaderUserAvatars(this.localPlayer);
         this.gamesScreen.setRoom(roomData, this.localPlayer);
+        this.chatWidget.initRoom(roomData, this.localPlayer);
         screenManager.show('games');
         window.history.pushState({ screen: 'games' }, '', '#games');
     }
@@ -292,6 +315,7 @@ class App {
         }
         this.localPlayer = null;
         this.currentRoom = null;
+        this.chatWidget?.clear();
         this.ticTacToeGame.reset();
         this.rpsGame.reset();
         this.c4Game.reset();
@@ -320,15 +344,18 @@ class App {
         this.wordGame.reset();
         this.battleshipGame.reset();
 
-        // 2. Clear current room on games screen and app state
+        // 2. Clear in-room chat history and hide chat widget
+        this.chatWidget?.clear();
+
+        // 3. Clear current room on games screen and app state
         this.currentRoom = null;
         this.gamesScreen.clearRoom();
 
-        // 3. Return to the Player List lobby screen
+        // 4. Return to the Player List lobby screen
         screenManager.show('lobby');
         window.history.pushState({ screen: 'lobby' }, '', '#lobby');
 
-        // 4. Show notification if a message was provided
+        // 5. Show notification if a message was provided
         if (message) {
             toastService.show(message, type);
         }
