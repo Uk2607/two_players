@@ -3,6 +3,9 @@ Two Players - Invite Events
 Handles sending, accepting, and declining game invites via Socket.IO.
 """
 
+import uuid
+from datetime import datetime, timezone
+
 
 def register_invite_events(socketio, player_service, invite_service, room_service):
     """Register invite-related event handlers."""
@@ -58,6 +61,20 @@ def register_invite_events(socketio, player_service, invite_service, room_servic
         print(f"[Invite] Paired room created: {room.room_id}! Emitting paired to {from_sid} and {request.sid}")
         socketio.emit('paired', pair_data, to=from_sid)
         socketio.emit('paired', pair_data, to=request.sid)
+
+        # Broadcast initial room pairing activity to in-room chat
+        act_payload = {
+            'id': str(uuid.uuid4())[:8],
+            'room_id': room.room_id,
+            'sender_id': 'system',
+            'sender_name': 'Room',
+            'text': f"🤝 {room.player1_name} and {room.player2_name} are paired up!",
+            'type': 'activity',
+            'timestamp': datetime.now(timezone.utc).isoformat(),
+        }
+        socketio.emit('chat_message', act_payload, to=from_sid)
+        socketio.emit('chat_message', act_payload, to=request.sid)
+
         broadcast_players()
 
     @socketio.on('decline_invite')

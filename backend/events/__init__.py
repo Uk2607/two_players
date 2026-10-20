@@ -12,6 +12,7 @@ from events.connect_four_events import register_connect_four_events
 from events.memory_match_events import register_memory_match_events
 from events.word_duel_events import register_word_duel_events
 from events.battleship_events import register_battleship_events
+from events.chat_events import register_chat_events
 
 
 def register_all_events(socketio, player_service, invite_service, room_service, game_services: dict):
@@ -20,6 +21,7 @@ def register_all_events(socketio, player_service, invite_service, room_service, 
     register_player_events(socketio, player_service)
     register_invite_events(socketio, player_service, invite_service, room_service)
     register_game_events(socketio, player_service, room_service, game_services)
+    register_chat_events(socketio, player_service, room_service)
     
     # Game-specific events
     if 'tic-tac-toe' in game_services:
