@@ -179,7 +179,7 @@ export class RockPaperScissorsGame {
     clearStageEffects() {
         this.handP1?.classList.remove('locked', 'winner-glow', 'loser-glow', 'shaking');
         this.handP2?.classList.remove('locked', 'winner-glow', 'loser-glow', 'shaking');
-        this.banner?.classList.remove('victory', 'tie');
+        this.banner?.classList.remove('victory', 'tie', 'defeat');
     }
 
     handleMakeChoice(choice) {
@@ -192,6 +192,10 @@ export class RockPaperScissorsGame {
         // If currently choosing and already chose, ignore
         if (this.state.status === 'choosing' && this.state.has_chosen?.[my_sid]) {
             return;
+        }
+
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try { navigator.vibrate(20); } catch (_) {}
         }
 
         this.clearCountdown();
@@ -351,12 +355,19 @@ export class RockPaperScissorsGame {
             const isWinner = winner_sid === my_sid;
             const isTie = winner_sid === null;
 
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                try {
+                    navigator.vibrate(isWinner ? [35, 45, 35] : (isTie ? 30 : 60));
+                } catch (_) {}
+            }
+
             if (this.bannerText) {
                 this.bannerText.textContent = state.round_result?.reason || 'Round finished!';
             }
             if (this.banner) {
                 this.banner.classList.toggle('victory', isWinner);
                 this.banner.classList.toggle('tie', isTie);
+                this.banner.classList.toggle('defeat', !isWinner && !isTie);
             }
 
             // Start auto-countdown to next round
@@ -393,6 +404,12 @@ export class RockPaperScissorsGame {
         const winner_sid = state.match_winner_sid;
         const winner_name = state.match_winner_name;
         const isWinner = winner_sid === my_sid;
+
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            try {
+                navigator.vibrate(isWinner ? [40, 60, 80] : [80]);
+            } catch (_) {}
+        }
 
         const p1_sid = state.player1_sid;
         const p2_sid = state.player2_sid;
