@@ -193,3 +193,26 @@ class MemoryMatchService:
         state['winner_name'] = None
 
         return True, '', state
+
+    def serialize_for_player(self, state: dict, sid: str = None) -> dict:
+        """Anti-cheat sanitizer: hide card symbols unless card is flipped or matched."""
+        if not state:
+            return {}
+
+        state_copy = state.copy()
+        flipped = set(state.get('flipped_indices', []))
+        is_game_ended = state.get('status') in ('won', 'draw')
+
+        sanitized_cards = []
+        for card in state.get('cards', []):
+            if is_game_ended or card.get('matched') or card.get('index') in flipped:
+                sanitized_cards.append(card)
+            else:
+                sanitized_cards.append({
+                    'index': card.get('index'),
+                    'symbol': '',  # Strictly hidden from client inspection
+                    'matched': False,
+                })
+
+        state_copy['cards'] = sanitized_cards
+        return state_copy
