@@ -97,8 +97,12 @@ def create_app() -> tuple[Flask, SocketIO]:
             file_path = frontend_dir / filename
             if file_path.is_file():
                 return send_from_directory(str(frontend_dir), filename)
-            # Fallback for SPA routing if path is not a file
-            return send_from_directory(str(frontend_dir), 'index.html')
+            if filename == 'env.js':
+                return ('window.__ENV__ = window.__ENV__ || {};', 200, {'Content-Type': 'application/javascript'})
+            # Fallback for SPA routing if path has no file extension
+            if '.' not in filename:
+                return send_from_directory(str(frontend_dir), 'index.html')
+            return ('Not Found', 404)
 
     return app, socketio
 
