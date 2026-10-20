@@ -23,6 +23,7 @@ export class WordDuelGame {
         this.roomData = null;
         this.localPlayer = null;
         this.state = null;
+        this.lastStrikes = undefined;
 
         this.cacheElements();
         this.bindEvents();
@@ -34,10 +35,12 @@ export class WordDuelGame {
         this.btnLeave = document.getElementById('btn-leave-word');
 
         // Scoreboard
+        this.cardP1 = document.getElementById('word-card-p1');
         this.nameP1 = document.getElementById('word-name-p1');
         this.avatarP1 = document.getElementById('word-avatar-p1');
         this.scoreP1 = document.getElementById('word-score-p1');
 
+        this.cardP2 = document.getElementById('word-card-p2');
         this.nameP2 = document.getElementById('word-name-p2');
         this.avatarP2 = document.getElementById('word-avatar-p2');
         this.scoreP2 = document.getElementById('word-score-p2');
@@ -72,6 +75,14 @@ export class WordDuelGame {
 
     getRoomId() {
         return this.roomData?.room_id || this.roomData?.id;
+    }
+
+    vibrate(pattern) {
+        try {
+            if ('vibrate' in navigator) {
+                navigator.vibrate(pattern);
+            }
+        } catch (_) {}
     }
 
     bindEvents() {
@@ -184,8 +195,11 @@ export class WordDuelGame {
     reset() {
         this.roomData = null;
         this.state = null;
+        this.lastStrikes = undefined;
         this.resultModal?.classList.add('hidden');
         if (this.solveInput) this.solveInput.value = '';
+        this.cardP1?.classList.remove('active-turn');
+        this.cardP2?.classList.remove('active-turn');
     }
 
     buildKeyboard() {
@@ -221,6 +235,8 @@ export class WordDuelGame {
             return;
         }
 
+        this.vibrate(15);
+
         socketService.emit('word_guess_letter', {
             room_id: this.getRoomId(),
             letter: letter,
@@ -237,6 +253,8 @@ export class WordDuelGame {
 
         const guess = this.solveInput?.value.trim().toUpperCase();
         if (!guess) return;
+
+        this.vibrate(20);
 
         socketService.emit('word_guess_full', {
             room_id: this.getRoomId(),
@@ -255,8 +273,13 @@ export class WordDuelGame {
         const my_sid = this.localPlayer?.id;
         const isP1 = my_sid === p1_sid;
         const isMyTurn = state.turn_sid === my_sid && state.status === 'in_progress';
+        const isP1Turn = state.turn_sid === p1_sid && state.status === 'in_progress';
+        const isP2Turn = state.turn_sid === p2_sid && state.status === 'in_progress';
 
-        // 1. Update Scoreboard Names & Avatars
+        // 1. Update Scoreboard Names, Avatars & Active Turn Glow
+        this.cardP1?.classList.toggle('active-turn', isP1Turn);
+        this.cardP2?.classList.toggle('active-turn', isP2Turn);
+
         if (this.nameP1) this.nameP1.textContent = state.player1_name + (isP1 ? ' (You)' : '');
         if (this.nameP2) this.nameP2.textContent = state.player2_name + (!isP1 ? ' (You)' : '');
         if (this.avatarP1) this.avatarP1.textContent = (state.player1_name || '1')[0].toUpperCase();
@@ -266,10 +289,16 @@ export class WordDuelGame {
         if (this.scoreP2) this.scoreP2.textContent = state.scores?.[p2_sid] ?? 0;
         if (this.roundBadge) this.roundBadge.textContent = `Round ${state.round} / ${state.max_rounds}`;
 
+        // Haptic feedback if strikes decreased
+        if (this.lastStrikes !== undefined && state.strikes_left < this.lastStrikes) {
+            this.vibrate([35, 45]);
+        }
+        this.lastStrikes = state.strikes_left;
+
         // Strikes left
         if (this.strikesContainer) {
-            const strikes = Math.max(0, state.strikes_left);
-            this.strikesContainer.innerHTML = '❤️'.repeat(strikes) + '🖤'.repeat(6 - strikes);
+            const strikes = Math.max(0, state.strikes_left ?? 6);
+            this.strikesContainer.innerHTML = '❤️'.repeat(strikes) + '🖤'.repeat(Math.max(0, 6 - strikes));
         }
 
         // 2. Turn Banner
@@ -299,15 +328,34 @@ export class WordDuelGame {
             }
         }
 
-        // 3. Render Blanks
+        // 3. Render Blanks (preserving existing elements so only newly revealed letters animate)
         if (this.blanksStage) {
-            this.blanksStage.innerHTML = '';
-            state.revealed.forEach((char) => {
-                const box = document.createElement('div');
-                box.className = `word-letter-box ${char !== '_' ? 'revealed' : ''}`;
-                box.textContent = char !== '_' ? char : '';
-                this.blanksStage.appendChild(box);
-            });
+            const currentBoxes = Array.from(this.blanksStage.children);
+            if (currentBoxes.length !== state.revealed.length) {
+                this.blanksStage.innerHTML = '';
+                state.revealed.forEach((char) => {
+                    const box = document.createElement('div');
+                    const isRevealed = char !== '_';
+                    box.className = `word-letter-box ${isRevealed ? 'revealed newly-revealed' : ''}`;
+                    box.textContent = isRevealed ? char : '';
+                    this.blanksStage.appendChild(box);
+                });
+            } else {
+                state.revealed.forEach((char, idx) => {
+                    const box = currentBoxes[idx];
+                    const wasRevealed = box.classList.contains('revealed');
+                    const isNowRevealed = char !== '_';
+                    if (!wasRevealed && isNowRevealed) {
+                        box.classList.add('revealed', 'newly-revealed');
+                        box.textContent = char;
+                    } else if (isNowRevealed) {
+                        box.textContent = char;
+                    } else {
+                        box.className = 'word-letter-box';
+                        box.textContent = '';
+                    }
+                });
+            }
         }
 
         // 4. Update Keyboard States
@@ -337,6 +385,7 @@ export class WordDuelGame {
     }
 
     showRoundResult(state, my_sid) {
+        this.vibrate([40, 60, 40, 80]);
         const isMatchEnded = state.status === 'match_ended';
         const p1_sid = state.player1_sid;
         const p2_sid = state.player2_sid;

@@ -623,9 +623,12 @@
 
             <!-- Direct Solve Input Bar -->
             <div class="word-solve-bar">
-                <input type="text" id="word-solve-input" class="word-solve-input" placeholder="SOLVE FULL WORD..."
-                    maxlength="12" autocomplete="off" />
-                <button id="btn-word-solve" class="word-solve-btn">SOLVE (+50)</button>
+                <input type="text" id="word-solve-input" class="word-solve-input" placeholder="Solve full word..."
+                    maxlength="12" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" />
+                <button id="btn-word-solve" class="word-solve-btn">
+                    <span>SOLVE</span>
+                    <span class="word-solve-bonus">+50</span>
+                </button>
             </div>
 
             <!-- Virtual QWERTY Keyboard -->
